@@ -1,0 +1,5 @@
+# Haskell
+dist-newstyle/
+
+# Emacs
+.dir-locals-2.el
