@@ -4,3 +4,5 @@ cradle:
       component: "lib:haskell-algorithms"
     - path: "./test"
       component: "test:tests"
+    - path: "./bench"
+      component: "benchmark:bench"
