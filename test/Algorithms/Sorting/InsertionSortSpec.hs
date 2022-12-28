@@ -1,7 +1,7 @@
-module Algorithms.Sort.InsertionSortSpec where
+module Algorithms.Sorting.InsertionSortSpec where
 
-import Algorithms.Sort.InsertionSort
-import Algorithms.Sort.TestUtil
+import Algorithms.Sorting.InsertionSort
+import Algorithms.Sorting.TestUtil
 import Control.Monad
 import qualified Data.Vector as V
 import Test.Hspec

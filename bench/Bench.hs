@@ -2,7 +2,7 @@
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 import Algorithms.MaximumSubArray
-import Algorithms.Sort.InsertionSort
+import Algorithms.Sorting.InsertionSort
 import Control.DeepSeq
 import Control.Monad
 import Criterion.Main

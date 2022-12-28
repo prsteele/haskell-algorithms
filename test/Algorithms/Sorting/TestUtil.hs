@@ -1,4 +1,4 @@
-module Algorithms.Sort.TestUtil where
+module Algorithms.Sorting.TestUtil where
 
 import Control.Monad
 import Data.Foldable

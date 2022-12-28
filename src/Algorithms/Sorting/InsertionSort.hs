@@ -10,7 +10,7 @@
 --   * Cormen, Thomas H and Leiserson, Charles E and Rivest, Ronald L
 --     and Stein, Clifford, "Introduction to Algorithms", 3rd ed., pp.
 --     18.
-module Algorithms.Sort.InsertionSort where
+module Algorithms.Sorting.InsertionSort where
 
 import Control.Monad
 import Control.Monad.Primitive
