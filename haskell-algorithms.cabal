@@ -26,6 +26,7 @@ library
   ghc-options:        -Wall
   exposed-modules:    Algorithms.MaximumSubArray
                     , Algorithms.Sequence
+                    , Algorithms.Sorting
                     , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.Linear.CountingSort
   build-depends:      base ^>=4.15.1.0

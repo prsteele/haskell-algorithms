@@ -11,11 +11,38 @@ import qualified Data.Vector.Unboxed.Mutable as UM
 
 -- | Sort a vector whose elements are integer-valued in a finite range.
 --
+-- Counting sort is a non-comparison based sort linear-time algorithm
+-- for sorting lists of integers, or objects that can be put in
+-- correspondence with the integers.
+--
 -- If an element is found that lies outside the stated range, a 'Left'
 -- is returned with that value.
+--
+-- +------------+------------+
+-- | Attribute  |            |
+-- +============+============+
+-- | In-place   | Yes        |
+-- +------------+------------+
+-- | Stable     | Yes        |
+-- +------------+------------+
+--
+-- == Complexity
+--
+-- This algorithm has complexity \(O(n k)\), where \(n\) is the length of
+-- the vector and \(k\) is the difference between the minimum and
+-- maximum values to be sorted.
+--
+-- == References
+--
+-- This implementation follows
+--
+--   * Cormen, Thomas H and Leiserson, Charles E and Rivest, Ronald L
+--     and Stein, Clifford, "Introduction to Algorithms", 3rd ed., pp.
+--     195.
 countingSort :: (G.Vector v a, Integral a) => (a, a) -> v a -> Either a (v a)
 countingSort (lo, hi) v = runST (runExceptT (countingSortST (lo, hi) v))
 
+-- | Counting sort, in the ST monad.
 countingSortST :: (G.Vector v a, Integral a) => (a, a) -> v a -> ExceptT a (ST s) (v a)
 countingSortST (lo, hi) v =
   let n :: Int
@@ -45,6 +72,7 @@ countingSortST (lo, hi) v =
 
         G.freeze result
 
+-- | Count the occurrences of each element of the input vector.
 getCounts ::
   (Integral a, G.Vector v a, PrimMonad m) =>
   (a, a) ->
