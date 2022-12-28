@@ -24,9 +24,12 @@ library
   hs-source-dirs:     src
   default-language:   Haskell2010
   ghc-options:        -Wall
-  exposed-modules:    Algorithms.Sorting.InsertionSort
-                    , Algorithms.MaximumSubArray
+  exposed-modules:    Algorithms.MaximumSubArray
+                    , Algorithms.Sequence
+                    , Algorithms.Sorting.InsertionSort
+                    , Algorithms.Sorting.Linear.CountingSort
   build-depends:      base ^>=4.15.1.0
+                    , mtl
                     , vector
                     , primitive
                     , microlens
@@ -39,6 +42,7 @@ test-suite tests
   type:               exitcode-stdio-1.0
   main-is:            Spec.hs
   other-modules:      Algorithms.MaximumSubArraySpec
+                    , Algorithms.Sorting.Linear.CountingSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
                     , Algorithms.Sorting.TestUtil
   build-depends:      base ^>=4.15.1.0
