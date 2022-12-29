@@ -1,9 +1,9 @@
 {-# LANGUAGE InstanceSigs #-}
 {-# LANGUAGE TupleSections #-}
 
-module Algorithms.Sorting.Linear.CountingSortSpec where
+module Algorithms.Sorting.CountingSortSpec where
 
-import Algorithms.Sorting.Linear.CountingSort
+import Algorithms.Sorting.CountingSort
 import Algorithms.Sorting.TestUtil
 import Data.Foldable (Foldable (foldl'))
 import Data.Function (on)
@@ -32,7 +32,7 @@ runAssertions v =
                 <> " outside "
                 <> show (lo, hi)
             )
-        Right sorted -> sorted `assertIsSortedCopyOf` v
+        Right sorted -> sorted `isSortedCopyOf` v
 
 -- Numbers tagged with an identifier. We provide definitions for
 -- Integral that do not preserve the identifiers.

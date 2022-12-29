@@ -1,4 +1,4 @@
-module Algorithms.Sorting.Linear.CountingSort where
+module Algorithms.Sorting.CountingSort where
 
 import Algorithms.Sequence
 import Control.Monad

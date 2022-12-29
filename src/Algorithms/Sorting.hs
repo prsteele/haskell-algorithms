@@ -17,5 +17,5 @@ module Algorithms.Sorting
   )
 where
 
+import Algorithms.Sorting.CountingSort
 import Algorithms.Sorting.InsertionSort
-import Algorithms.Sorting.Linear.CountingSort

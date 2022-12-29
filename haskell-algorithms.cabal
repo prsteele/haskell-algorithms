@@ -28,7 +28,7 @@ library
                     , Algorithms.Sequence
                     , Algorithms.Sorting
                     , Algorithms.Sorting.InsertionSort
-                    , Algorithms.Sorting.Linear.CountingSort
+                    , Algorithms.Sorting.CountingSort
   build-depends:      base ^>=4.15.1.0
                     , mtl
                     , vector
@@ -43,7 +43,7 @@ test-suite tests
   type:               exitcode-stdio-1.0
   main-is:            Spec.hs
   other-modules:      Algorithms.MaximumSubArraySpec
-                    , Algorithms.Sorting.Linear.CountingSortSpec
+                    , Algorithms.Sorting.CountingSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
                     , Algorithms.Sorting.TestUtil
   build-depends:      base ^>=4.15.1.0
