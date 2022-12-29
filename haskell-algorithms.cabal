@@ -26,6 +26,7 @@ library
   ghc-options:        -Wall
   exposed-modules:    Algorithms.MaximumSubArray
                     , Algorithms.Sequence
+                    , Algorithms.Shuffle
                     , Algorithms.Sorting
                     , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.CountingSort
@@ -34,6 +35,7 @@ library
                     , Algorithms.Utility
   build-depends:      base ^>=4.15.1.0
                     , mtl
+                    , random
                     , vector
                     , primitive
                     , microlens
