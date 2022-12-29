@@ -29,6 +29,7 @@ library
                     , Algorithms.Sorting
                     , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.CountingSort
+                    , Algorithms.Sorting.QuickSort
                     , Algorithms.Sorting.Sort3
   build-depends:      base ^>=4.15.1.0
                     , mtl
