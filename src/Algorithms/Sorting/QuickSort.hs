@@ -5,6 +5,7 @@
 module Algorithms.Sorting.QuickSort where
 
 import Algorithms.Sorting.Sort3
+import Algorithms.Utility
 import Control.Monad
 import Control.Monad.Primitive
 import Control.Monad.ST
@@ -63,30 +64,24 @@ partition ::
 partition pivotRule v =
   let n = MG.length v
 
-      swap i j = do
-        ix <- MG.read v i
-        jx <- MG.read v j
-        MG.write v i jx
-        MG.write v j ix
-
       go pivot i j
         | j == n - 1 = pure i
         | otherwise = do
           x <- MG.read v j
           let doSwap = x <= pivot
-          when doSwap (swap (i + 1) j)
+          when doSwap (swap v (i + 1) j)
           go pivot (if doSwap then i + 1 else i) (j + 1)
    in do
         -- Swap the selected pivot to the end of the array
         let pivotIx = n - 1
-        pivotRule v >>= swap pivotIx
+        pivotRule v >>= swap v pivotIx
         pivot <- MG.read v pivotIx
 
         -- Partition elements, tracking where the pivot should end up
         i <- fmap (+ 1) (go pivot (-1) 0)
 
         -- Send the pivot to the proper index
-        swap i pivotIx
+        swap v i pivotIx
         pure i
 
 pivotLast :: (PrimMonad m, MG.MVector v a) => v (PrimState m) a -> m Int
