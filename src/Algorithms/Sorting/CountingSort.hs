@@ -21,7 +21,7 @@ import qualified Data.Vector.Unboxed.Mutable as UM
 -- +------------+------------+
 -- | Attribute  |            |
 -- +============+============+
--- | In-place   | Yes        |
+-- | In-place   | No         |
 -- +------------+------------+
 -- | Stable     | Yes        |
 -- +------------+------------+
