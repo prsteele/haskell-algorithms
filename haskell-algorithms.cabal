@@ -49,6 +49,7 @@ test-suite tests
                     , Algorithms.Sorting.InsertionSortSpec
                     , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
+                    , Algorithms.TestUtil
   build-depends:      base ^>=4.15.1.0
                     , QuickCheck
                     , haskell-algorithms

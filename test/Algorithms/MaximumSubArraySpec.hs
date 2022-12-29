@@ -1,6 +1,7 @@
 module Algorithms.MaximumSubArraySpec where
 
 import Algorithms.MaximumSubArray
+import Algorithms.TestUtil ()
 import qualified Data.Vector as V
 import Lens.Micro
 import Test.Hspec
@@ -9,7 +10,7 @@ import Test.Hspec.QuickCheck
 spec :: Spec
 spec =
   describe "MaximumSubArray" $ do
-    prop "finds the maximum sub array" (runAssertions . V.fromList)
+    prop "finds the maximum sub array" runAssertions
 
 bruteMaximumSubArray :: V.Vector Int -> SubArraySum Int
 bruteMaximumSubArray v =
