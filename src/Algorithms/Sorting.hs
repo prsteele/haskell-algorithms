@@ -14,8 +14,12 @@ module Algorithms.Sorting
 
     -- | Linear-time sorting algorithms, specialized for sorting integers.
     countingSort,
+
+    -- * Specialized sorts
+    sort3,
   )
 where
 
 import Algorithms.Sorting.CountingSort
 import Algorithms.Sorting.InsertionSort
+import Algorithms.Sorting.Sort3

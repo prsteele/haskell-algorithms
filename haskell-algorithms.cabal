@@ -29,6 +29,7 @@ library
                     , Algorithms.Sorting
                     , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.CountingSort
+                    , Algorithms.Sorting.Sort3
   build-depends:      base ^>=4.15.1.0
                     , mtl
                     , vector
@@ -45,6 +46,7 @@ test-suite tests
   other-modules:      Algorithms.MaximumSubArraySpec
                     , Algorithms.Sorting.CountingSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
+                    , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
   build-depends:      base ^>=4.15.1.0
                     , QuickCheck
