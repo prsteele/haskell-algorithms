@@ -54,6 +54,7 @@ test-suite tests
                     , HUnit
                     , hspec
                     , microlens
+                    , microlens-th
                     , vector
 
 benchmark bench
