@@ -25,6 +25,7 @@ library
   default-language:   Haskell2010
   ghc-options:        -Wall
   exposed-modules:    Algorithms.MaximumSubArray
+                    , Algorithms.Permutations
                     , Algorithms.Sequence
                     , Algorithms.Shuffle
                     , Algorithms.Sorting
@@ -48,7 +49,8 @@ test-suite tests
   ghc-options:        -threaded -with-rtsopts=-N -Wall
   type:               exitcode-stdio-1.0
   main-is:            Spec.hs
-  other-modules:      Algorithms.MaximumSubArraySpec
+  other-modules:      Algorithms.PermutationsSpec
+                    , Algorithms.MaximumSubArraySpec
                     , Algorithms.Sorting.CountingSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
                     , Algorithms.Sorting.MergeSortSpec
