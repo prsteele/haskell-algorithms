@@ -2,7 +2,7 @@ module Algorithms.Sorting.CountingSortSpec where
 
 import Algorithms.Sorting.CountingSort
 import Algorithms.Sorting.TestUtil
-import Algorithms.TestUtil ()
+import Algorithms.TestUtil
 import Data.Foldable (Foldable (foldl'))
 import qualified Data.Vector as V
 import qualified Data.Vector.Generic as G
@@ -13,10 +13,10 @@ spec :: Spec
 spec =
   describe "countingSort" $
     do
-      prop "is a stable sorting algorithm" $ \v -> do
+      prop "is a stable sorting algorithm" $ \(IntVector v) -> do
         -- We inline isStableSortingAlgorithm to avoid problems with
         -- rank-2 type inference
-        let v' = V.map (uncurry Ix) (V.indexed (v :: V.Vector Int))
+        let v' = V.map (uncurry Ix) (V.indexed v)
         isSortingAlgorithm countingSortAdapter v
         isStablySorted (V.toList (countingSortAdapter v'))
 

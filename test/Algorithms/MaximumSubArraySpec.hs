@@ -1,7 +1,7 @@
 module Algorithms.MaximumSubArraySpec where
 
 import Algorithms.MaximumSubArray
-import Algorithms.TestUtil ()
+import Algorithms.TestUtil
 import qualified Data.Vector as V
 import Lens.Micro
 import Test.Hspec
@@ -23,8 +23,8 @@ bruteMaximumSubArray v =
         then SubArraySum (Slice 0 0) 0
         else maximum subs
 
-runAssertions :: V.Vector Int -> Expectation
-runAssertions v =
+runAssertions :: IntVector -> Expectation
+runAssertions (IntVector v) =
   let maxSub = maximumSubArrayNum v
    in do
         -- Check against the brute-force solution
