@@ -52,6 +52,7 @@ test-suite tests
                     , Algorithms.Sorting.CountingSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
                     , Algorithms.Sorting.MergeSortSpec
+                    , Algorithms.Sorting.QuickSortSpec
                     , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
                     , Algorithms.TestUtil
