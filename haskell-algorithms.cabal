@@ -30,6 +30,7 @@ library
                     , Algorithms.Sorting
                     , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.CountingSort
+                    , Algorithms.Sorting.MergeSort
                     , Algorithms.Sorting.QuickSort
                     , Algorithms.Sorting.Sort3
                     , Algorithms.Utility
@@ -50,6 +51,7 @@ test-suite tests
   other-modules:      Algorithms.MaximumSubArraySpec
                     , Algorithms.Sorting.CountingSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
+                    , Algorithms.Sorting.MergeSortSpec
                     , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
                     , Algorithms.TestUtil
