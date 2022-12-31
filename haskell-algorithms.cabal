@@ -34,6 +34,7 @@ library
                     , Algorithms.Sorting.MergeSort
                     , Algorithms.Sorting.QuickSort
                     , Algorithms.Sorting.Sort3
+                    , Algorithms.Sorting.Utility
                     , Algorithms.Utility
   build-depends:      base ^>=4.15.1.0
                     , mtl

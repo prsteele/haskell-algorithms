@@ -1,3 +1,4 @@
+{-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 
 -- | Sort a vector with merge sort.
@@ -17,9 +18,11 @@
 --     31.
 module Algorithms.Sorting.MergeSort where
 
+import Algorithms.Sorting.Utility
 import Algorithms.Utility
 import Control.Monad.Primitive
 import Control.Monad.ST
+import Data.Ord (comparing)
 import qualified Data.Vector.Generic as G
 import qualified Data.Vector.Generic.Mutable as MG
 
@@ -33,9 +36,35 @@ import qualified Data.Vector.Generic.Mutable as MG
 -- | Stable     | Yes        |
 -- +------------+------------+
 mergeSort :: (G.Vector v a, Ord a) => v a -> v a
-mergeSort v = runST $ do
+mergeSort = mergeSortBy compare
+
+-- | Sort a vector by comparing elements under the given transformation.
+--
+-- The transformation function is evaluated exactly once per vector element.
+--
+-- +------------+------------+
+-- | Attribute  |            |
+-- +============+============+
+-- | In-place   | No         |
+-- +------------+------------+
+-- | Stable     | Yes        |
+-- +------------+------------+
+mergeSortOn :: (G.Vector v a, G.Vector v (b, a), Ord b) => (a -> b) -> v a -> v a
+mergeSortOn = mkSortOn mergeSortBy
+
+-- | Sort a vecdtor using the provided comparison function.
+--
+-- +------------+------------+
+-- | Attribute  |            |
+-- +============+============+
+-- | In-place   | No         |
+-- +------------+------------+
+-- | Stable     | Yes        |
+-- +------------+------------+
+mergeSortBy :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> v a
+mergeSortBy cmp v = runST $ do
   mv <- G.thaw v
-  mutMergeSort mv
+  mutMergeSortBy cmp mv
   G.freeze mv
 
 -- | Sort a vector in-place.
@@ -48,7 +77,32 @@ mergeSort v = runST $ do
 -- | Stable     | Yes        |
 -- +------------+------------+
 mutMergeSort :: (PrimMonad m, G.Vector v a, Ord a) => G.Mutable v (PrimState m) a -> m ()
-mutMergeSort mv
+mutMergeSort = mutMergeSortBy compare
+
+-- | Sort a vector in-place by comparing elements under the given transformation.
+mutMergeSortOn ::
+  (PrimMonad m, G.Vector v a, G.Vector v (b, a), Ord b) =>
+  (a -> b) ->
+  G.Mutable v (PrimState m) a ->
+  m ()
+mutMergeSortOn f mv =
+  let tag x = let y = f x in y `seq` (y, x)
+   in do
+        tagged <- G.freeze mv >>= G.thaw . G.map tag
+        mutMergeSortBy (comparing fst) tagged
+        MG.iforM_ mv $ \i _ -> MG.read tagged i >>= MG.write mv i . snd
+
+-- | Sort a vector in-place using the provided comparison.
+--
+-- +------------+------------+
+-- | Attribute  |            |
+-- +============+============+
+-- | In-place   | Yes        |
+-- +------------+------------+
+-- | Stable     | Yes        |
+-- +------------+------------+
+mutMergeSortBy :: (PrimMonad m, G.Vector v a) => (a -> a -> Ordering) -> G.Mutable v (PrimState m) a -> m ()
+mutMergeSortBy cmp mv
   | MG.length mv <= 1 = pure ()
   | otherwise =
     let n = MG.length mv
@@ -58,20 +112,20 @@ mutMergeSort mv
         right = MG.slice mid (n - mid) mv
      in do
           -- Recurse left
-          mutMergeSort left
+          mutMergeSortBy cmp left
 
           -- Recurse right
-          mutMergeSort right
+          mutMergeSortBy cmp right
 
           -- Merge
           left' <- G.freeze left
           right' <- G.freeze right
-          mutMerge left' right' mv
+          mutMerge cmp left' right' mv
 
-merge :: (G.Vector v a, Ord a) => v a -> v a -> v a
-merge u v = runST $ do
+merge :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> v a -> v a
+merge cmp u v = runST $ do
   w <- MG.new (G.length u + G.length v)
-  mutMerge u v w
+  mutMerge cmp u v w
   G.freeze w
 
 -- | Merge two vectors into a third, in-place.
@@ -80,12 +134,13 @@ merge u v = runST $ do
 -- assumed that the length of the two input vectors sum to the length
 -- of the output vector. Neither of these preconditions are checked.
 mutMerge ::
-  (PrimMonad m, G.Vector v a, MG.MVector mv a, Ord a) =>
+  (PrimMonad m, G.Vector v a, MG.MVector mv a) =>
+  (a -> a -> Ordering) ->
   v a ->
   v a ->
   mv (PrimState m) a ->
   m ()
-mutMerge left right output =
+mutMerge cmp left right output =
   let lenL = G.length left
       lenR = G.length right
 
@@ -101,7 +156,7 @@ mutMerge left right output =
           let l = left G.! i
               r = right G.! j
 
-          if l <= r
+          if cmp l r /= GT
             then MG.write output k l >> go (i + 1) j (k + 1)
             else MG.write output k r >> go i (j + 1) (k + 1)
    in go 0 0 0
