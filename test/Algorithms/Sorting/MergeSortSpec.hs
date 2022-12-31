@@ -13,6 +13,12 @@ spec = do
   describe "mergeSort" $ do
     prop "is a stable sorting algorithm" $ \(IntVector v) ->
       isStableSortingAlgorithm mergeSort (v :: V.Vector Int)
+  describe "mergeSortOn" $ do
+    prop "is a stable sorting algorithm" $ \(IntVector v) ->
+      isStableSortingAlgorithm (mergeSortOn id) (v :: V.Vector Int)
+  describe "mergeSortBy" $ do
+    prop "is a stable sorting algorithm" $ \(IntVector v) ->
+      isStableSortingAlgorithm (mergeSortBy compare) (v :: V.Vector Int)
   describe "mutMerge" $ do
     prop "properly merges vectors" $ \(IntVector v) (IntVector w) ->
-      merge (quickSort v) (quickSort w) `shouldBe` quickSort (v <> w)
+      merge compare (quickSort v) (quickSort w) `shouldBe` quickSort (v <> w)

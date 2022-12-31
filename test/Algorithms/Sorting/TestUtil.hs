@@ -4,17 +4,21 @@
 
 module Algorithms.Sorting.TestUtil where
 
+import Algorithms.Permutations
 import Control.Monad
-import Data.Foldable
 import Data.Function
-import Data.List
+import qualified Data.Vector as V
 import qualified Data.Vector.Generic as G
 import Lens.Micro hiding (ix)
 import Lens.Micro.TH
 import Test.HUnit
 import Test.Hspec
 
--- | A value tagged by its index in some list.
+-- | A value tagged by its index in a sequence.
+--
+-- We prodide 'Num' and related instances that use 'undefined' for all
+-- new indices; this is to allow this type to be used with e.g. Radix
+-- sort. No actual sorting algorithm should need arithmetic.
 data Ix a = Ix {_ix :: Int, _value :: a}
   deriving (Show, Eq)
 
@@ -54,44 +58,47 @@ instance Ord a => Ord (WithIx a) where
 mkIxs :: [a] -> [Ix a]
 mkIxs = zipWith Ix [0 ..]
 
-isStablySorted :: (Show a, Ord a, Foldable f) => f (Ix a) -> Expectation
+-- | Verify that a sorted list of 'Ix a' has maintained index ordering
+-- in the case of ties.
+isStablySorted :: (Show a, Ord a, G.Vector v (WithIx a), G.Vector v (Ix a)) => v (Ix a) -> Expectation
 isStablySorted v = do
-  isSorted (fmap WithIx (toList v))
+  isSorted (G.map WithIx v)
 
 -- | Verify that the given function is a valid sorting algorithm.
 --
 -- We simply compare the result
 isSortingAlgorithm :: (Show a, Ord a, G.Vector v a) => (v a -> v a) -> v a -> Expectation
-isSortingAlgorithm f v = G.toList (f v) `isSortedCopyOf` G.toList v
+isSortingAlgorithm f v = f v `isSortedCopyOf` v
 
 -- | Verify that the given function is a valid stable sorting algorithm.
 --
 -- This implies 'isSortingAlgorithm'.
 isStableSortingAlgorithm ::
-  (Show a, Ord a, G.Vector v a, G.Vector v (Ix a), G.Vector v (Int, a)) =>
+  (Show a, Ord a, G.Vector v a, G.Vector v (Ix a), G.Vector v (WithIx a), G.Vector v (Int, a)) =>
   (forall b. (Ord b, G.Vector v b) => v b -> v b) ->
   v a ->
   Expectation
 isStableSortingAlgorithm f v = do
   isSortingAlgorithm f v
-  isStablySorted (G.toList (f v'))
+  isStablySorted (f v')
   where
     v' = G.map (uncurry Ix) (G.indexed v)
 
-isSortedCopyOf :: (Show a, Ord a, Foldable f) => f a -> f a -> Expectation
+isSortedCopyOf :: (Show a, Ord a, G.Vector v a) => v a -> v a -> Expectation
 isSortedCopyOf sorted unsorted = do
   -- Verify the sorted list is, in fact, sorted
-  isSorted (toList sorted)
+  isSorted sorted
 
-  -- Verify the two lists have the same elements
-  when (sort (toList sorted) /= sort (toList unsorted)) $ do
-    assertFailure
-      ( "elements of " <> show (toList sorted)
-          <> " differ from "
-          <> show (toList unsorted)
-      )
+  -- Verify the sorted list is a permutation of the second
+  case (sorted `permutationTo` unsorted) :: Maybe (V.Vector Int) of
+    Just _ -> pure ()
+    Nothing ->
+      assertFailure
+        ( "sorting the list did not produce a permutation: "
+            <> show (G.toList sorted)
+        )
 
-isSorted :: (Show a, Foldable f, Ord a) => f a -> Expectation
-isSorted xs = forM_ (zip (toList xs) (tail (toList xs))) $ \(x, y) -> do
+isSorted :: (Show a, G.Vector v a, Ord a) => v a -> Expectation
+isSorted xs = forM_ (zip (G.toList xs) (tail (G.toList xs))) $ \(x, y) -> do
   when (x > y) $ do
-    assertFailure (show x <> " > " <> show y <> " in " <> show (toList xs))
+    assertFailure (show x <> " > " <> show y <> " in " <> show (G.toList xs))

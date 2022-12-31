@@ -18,7 +18,7 @@ spec =
         -- rank-2 type inference
         let v' = V.map (uncurry Ix) (V.indexed v)
         isSortingAlgorithm countingSortAdapter v
-        isStablySorted (V.toList (countingSortAdapter v'))
+        isStablySorted (countingSortAdapter v')
 
 countingSortAdapter :: (Show a, Integral a, G.Vector v a) => v a -> v a
 countingSortAdapter v =

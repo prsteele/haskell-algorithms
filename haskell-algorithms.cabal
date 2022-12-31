@@ -29,8 +29,8 @@ library
                     , Algorithms.Sequence
                     , Algorithms.Shuffle
                     , Algorithms.Sorting
-                    , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.CountingSort
+                    , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.MergeSort
                     , Algorithms.Sorting.QuickSort
                     , Algorithms.Sorting.Sort3
