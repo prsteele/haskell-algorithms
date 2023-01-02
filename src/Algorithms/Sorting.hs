@@ -2,8 +2,14 @@ module Algorithms.Sorting
   ( -- * General-purpose
 
     -- | These sorting algorithms are suitable for most use cases.
-    quickSort,
+
+    -- ** Quicksort
+    quicksort,
+    quicksortBy,
+    quicksortOn,
     mutQuicksort,
+    mutQuicksortBy,
+    mutQuicksortOn,
     mergeSort,
     mutMergeSort,
 
@@ -27,5 +33,5 @@ where
 import Algorithms.Sorting.CountingSort
 import Algorithms.Sorting.InsertionSort
 import Algorithms.Sorting.MergeSort
-import Algorithms.Sorting.QuickSort
+import Algorithms.Sorting.Quicksort
 import Algorithms.Sorting.Sort3

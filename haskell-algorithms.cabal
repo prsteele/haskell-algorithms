@@ -32,7 +32,7 @@ library
                     , Algorithms.Sorting.CountingSort
                     , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.MergeSort
-                    , Algorithms.Sorting.QuickSort
+                    , Algorithms.Sorting.Quicksort
                     , Algorithms.Sorting.Sort3
                     , Algorithms.Sorting.Utility
                     , Algorithms.Utility
@@ -55,7 +55,7 @@ test-suite tests
                     , Algorithms.Sorting.CountingSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
                     , Algorithms.Sorting.MergeSortSpec
-                    , Algorithms.Sorting.QuickSortSpec
+                    , Algorithms.Sorting.QuicksortSpec
                     , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
                     , Algorithms.TestUtil

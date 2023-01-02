@@ -1,7 +1,7 @@
 module Algorithms.Sorting.MergeSortSpec where
 
 import Algorithms.Sorting.MergeSort
-import Algorithms.Sorting.QuickSort
+import Algorithms.Sorting.Quicksort
 import Algorithms.Sorting.TestUtil
 import Algorithms.TestUtil
 import qualified Data.Vector as V
@@ -21,4 +21,4 @@ spec = do
       isStableSortingAlgorithm (mergeSortBy compare) (v :: V.Vector Int)
   describe "mutMerge" $ do
     prop "properly merges vectors" $ \(IntVector v) (IntVector w) ->
-      merge compare (quickSort v) (quickSort w) `shouldBe` quickSort (v <> w)
+      merge compare (quicksort v) (quicksort w) `shouldBe` quicksort (v <> w)
