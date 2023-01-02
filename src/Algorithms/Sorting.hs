@@ -37,6 +37,8 @@ module Algorithms.Sorting
 
     -- * Specialized sorts
     sort3,
+    sort3By,
+    sort3On,
   )
 where
 

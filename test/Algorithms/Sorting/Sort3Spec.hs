@@ -7,30 +7,22 @@ import Test.Hspec
 import Test.Hspec.QuickCheck
 
 spec :: Spec
-spec =
+spec = do
   describe "sort3" $ do
-    prop "sorts arbitrary triples" checkSort3
     prop "is a stable sorting algorithm" $
-      \x y z -> isStableSortingAlgorithm sortingAdapter (V.fromList [x, y, z :: Int])
+      \x y z -> isStableSortingAlgorithm (sortingAdapter sort3) (vec3 x y z)
+  describe "sort3By" $ do
+    prop "is a stable sorting algorithm" $
+      \x y z -> isStableSortingAlgorithm (sortingAdapter (sort3By compare)) (vec3 x y z)
+  describe "sort3On" $ do
+    prop "is a stable sorting algorithm" $
+      \x y z -> isStableSortingAlgorithm (sortingAdapter (sort3On id)) (vec3 x y z)
 
-sortingAdapter :: Ord a => V.Vector a -> V.Vector a
-sortingAdapter v =
+vec3 :: Int -> Int -> Int -> V.Vector Int
+vec3 x y z = V.fromList [x, y, z]
+
+sortingAdapter :: (a -> a -> a -> (a, a, a)) -> V.Vector a -> V.Vector a
+sortingAdapter sort v =
   let v3 = V.slice 0 3 v
-      (x, y, z) = sort3 (v3 V.! 0) (v3 V.! 1) (v3 V.! 2)
+      (x, y, z) = sort (v3 V.! 0) (v3 V.! 1) (v3 V.! 2)
    in V.fromList [x, y, z]
-
-uncurry3 :: (a -> b -> c -> d) -> (a, b, c) -> d
-uncurry3 f (a, b, c) = f a b c
-
-checkSort3 :: Int -> Int -> Int -> Bool
-checkSort3 x y z =
-  let check (x', y', z') = x' <= y' && y' <= z'
-   in all
-        (check . uncurry3 sort3)
-        [ (x, y, z),
-          (x, z, y),
-          (y, x, z),
-          (y, z, x),
-          (z, x, y),
-          (z, y, x)
-        ]
