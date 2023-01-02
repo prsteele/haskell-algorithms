@@ -10,8 +10,14 @@ module Algorithms.Sorting
     mutQuicksort,
     mutQuicksortBy,
     mutQuicksortOn,
+
+    -- ** Merge sort
     mergeSort,
+    mergeSortBy,
+    mergeSortOn,
     mutMergeSort,
+    mutMergeSortBy,
+    mutMergeSortOn,
 
     -- * For small lists
 

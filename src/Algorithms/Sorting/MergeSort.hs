@@ -1,6 +1,9 @@
 {-# LANGUAGE FlexibleContexts #-}
 
--- | Sort a vector with merge sort.
+-- | Sort a vector with merge sort. This sorting algorithm is __stable__.
+--
+-- The transformation performed by 'mergeSortOn' and 'mutMergeSortOn'
+-- is performed exactly once per element.
 --
 -- == Complexity
 --
@@ -15,91 +18,52 @@
 --   * Cormen, Thomas H and Leiserson, Charles E and Rivest, Ronald L
 --     and Stein, Clifford, "Introduction to Algorithms", 3rd ed., pp.
 --     31.
-module Algorithms.Sorting.MergeSort where
+module Algorithms.Sorting.MergeSort
+  ( -- * Immutable sorts
+    mergeSort,
+    mergeSortBy,
+    mergeSortOn,
+
+    -- * Mutable sorts
+    mutMergeSort,
+    mutMergeSortBy,
+    mutMergeSortOn,
+
+    -- * Merging vectors
+    merge,
+    mutMerge,
+  )
+where
 
 import Algorithms.Sorting.Utility
 import Algorithms.Utility
 import Control.Monad.Primitive
 import Control.Monad.ST
-import Data.Ord (comparing)
 import qualified Data.Vector.Generic as G
 import qualified Data.Vector.Generic.Mutable as MG
 
--- | Sort a vector.
---
--- +------------+------------+
--- | Attribute  |            |
--- +============+============+
--- | In-place   | No         |
--- +------------+------------+
--- | Stable     | Yes        |
--- +------------+------------+
 mergeSort :: (G.Vector v a, Ord a) => v a -> v a
 mergeSort = mergeSortBy compare
 
--- | Sort a vector by comparing elements under the given transformation.
---
--- The transformation function is evaluated exactly once per vector element.
---
--- +------------+------------+
--- | Attribute  |            |
--- +============+============+
--- | In-place   | No         |
--- +------------+------------+
--- | Stable     | Yes        |
--- +------------+------------+
 mergeSortOn :: (G.Vector v a, G.Vector v (b, a), Ord b) => (a -> b) -> v a -> v a
 mergeSortOn = mkSortOn mergeSortBy
 
--- | Sort a vecdtor using the provided comparison function.
---
--- +------------+------------+
--- | Attribute  |            |
--- +============+============+
--- | In-place   | No         |
--- +------------+------------+
--- | Stable     | Yes        |
--- +------------+------------+
-mergeSortBy :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> v a
+mergeSortBy :: G.Vector v a => (a -> a -> Ordering) -> v a -> v a
 mergeSortBy cmp v = runST $ do
   mv <- G.thaw v
   mutMergeSortBy cmp mv
   G.freeze mv
 
--- | Sort a vector in-place.
---
--- +------------+------------+
--- | Attribute  |            |
--- +============+============+
--- | In-place   | Yes        |
--- +------------+------------+
--- | Stable     | Yes        |
--- +------------+------------+
 mutMergeSort :: (PrimMonad m, G.Vector v a, Ord a) => G.Mutable v (PrimState m) a -> m ()
 mutMergeSort = mutMergeSortBy compare
 
--- | Sort a vector in-place by comparing elements under the given transformation.
 mutMergeSortOn ::
   (PrimMonad m, G.Vector v a, G.Vector v (b, a), Ord b) =>
   (a -> b) ->
   G.Mutable v (PrimState m) a ->
   m ()
-mutMergeSortOn f mv =
-  let tag x = let y = f x in y `seq` (y, x)
-   in do
-        tagged <- G.freeze mv >>= G.thaw . G.map tag
-        mutMergeSortBy (comparing fst) tagged
-        MG.iforM_ mv $ \i _ -> MG.read tagged i >>= MG.write mv i . snd
+mutMergeSortOn = mkMutSortOn mutMergeSortBy
 
--- | Sort a vector in-place using the provided comparison.
---
--- +------------+------------+
--- | Attribute  |            |
--- +============+============+
--- | In-place   | Yes        |
--- +------------+------------+
--- | Stable     | Yes        |
--- +------------+------------+
 mutMergeSortBy :: (PrimMonad m, G.Vector v a) => (a -> a -> Ordering) -> G.Mutable v (PrimState m) a -> m ()
 mutMergeSortBy cmp mv
   | MG.length mv <= 1 = pure ()
@@ -121,6 +85,7 @@ mutMergeSortBy cmp mv
           right' <- G.freeze right
           mutMerge cmp left' right' mv
 
+-- | Merge two sorted vectors into a new sorted vector.
 merge :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> v a -> v a
 merge cmp u v = runST $ do
   w <- MG.new (G.length u + G.length v)
