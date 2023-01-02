@@ -24,7 +24,11 @@ module Algorithms.Sorting
     -- | These sorting algorithms have poor worst-case complexity, and
     -- so are useful on small lists (or possibly nearly-sorted lists.)
     insertionSort,
+    insertionSortBy,
+    insertionSortOn,
     mutInsertionSort,
+    mutInsertionSortBy,
+    mutInsertionSortOn,
 
     -- * For integers
 
