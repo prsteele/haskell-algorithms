@@ -33,6 +33,7 @@ library
                     , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.MergeSort
                     , Algorithms.Sorting.Quicksort
+                    , Algorithms.Sorting.RadixSort
                     , Algorithms.Sorting.Sort3
                     , Algorithms.Sorting.Utility
                     , Algorithms.Utility
@@ -56,6 +57,7 @@ test-suite tests
                     , Algorithms.Sorting.InsertionSortSpec
                     , Algorithms.Sorting.MergeSortSpec
                     , Algorithms.Sorting.QuicksortSpec
+                    , Algorithms.Sorting.RadixSortSpec
                     , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
                     , Algorithms.TestUtil
@@ -65,7 +67,6 @@ test-suite tests
                     , HUnit
                     , hspec
                     , microlens
-                    , microlens-th
                     , vector
 
 benchmark bench

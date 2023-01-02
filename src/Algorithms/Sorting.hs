@@ -30,12 +30,18 @@ module Algorithms.Sorting
     mutInsertionSortBy,
     mutInsertionSortOn,
 
-    -- * For integers
+    -- * Linear-time sorts
 
-    -- | Linear-time sorting algorithms, specialized for sorting integers.
+    -- ** Counting sort
     countingSort,
 
-    -- * Specialized sorts
+    -- ** Radix sort
+    radixSort,
+    mutRadixSort,
+    twosComplementRadixSort,
+    mutTwosComplementRadixSort,
+
+    -- * Constant-time sorts
     sort3,
     sort3By,
     sort3On,
@@ -46,4 +52,5 @@ import Algorithms.Sorting.CountingSort
 import Algorithms.Sorting.InsertionSort
 import Algorithms.Sorting.MergeSort
 import Algorithms.Sorting.Quicksort
+import Algorithms.Sorting.RadixSort
 import Algorithms.Sorting.Sort3

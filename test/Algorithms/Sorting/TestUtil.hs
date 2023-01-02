@@ -1,6 +1,5 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE Rank2Types #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module Algorithms.Sorting.TestUtil where
 
@@ -9,8 +8,6 @@ import Control.Monad
 import Data.Function
 import qualified Data.Vector as V
 import qualified Data.Vector.Generic as G
-import Lens.Micro hiding (ix)
-import Lens.Micro.TH
 import Test.HUnit
 import Test.Hspec
 
@@ -22,10 +19,8 @@ import Test.Hspec
 data Ix a = Ix {_ix :: Int, _value :: a}
   deriving (Show, Eq)
 
-makeLenses ''Ix
-
 instance Ord a => Ord (Ix a) where
-  compare = compare `on` (^. value)
+  compare = compare `on` _value
 
 -- To help out some algorithms, we provide a correspondence to the
 -- integers. We leave all tags as bottom, as the only actual operation
@@ -53,7 +48,7 @@ newtype WithIx a = WithIx {unWithIx :: Ix a}
   deriving (Show, Eq)
 
 instance Ord a => Ord (WithIx a) where
-  compare (WithIx x) (WithIx y) = compare x y <> (compare `on` (^. ix)) x y
+  compare (WithIx x) (WithIx y) = compare x y <> (compare `on` _ix) x y
 
 mkIxs :: [a] -> [Ix a]
 mkIxs = zipWith Ix [0 ..]
