@@ -26,6 +26,8 @@ library
   ghc-options:        -Wall
   exposed-modules:    Algorithms.MaximumSubArray
                     , Algorithms.Permutations
+                    , Algorithms.Search
+                    , Algorithms.Search.Traversal
                     , Algorithms.Sequence
                     , Algorithms.Shuffle
                     , Algorithms.Sorting
@@ -39,11 +41,14 @@ library
                     , Algorithms.Utility
   build-depends:      base ^>=4.15.1.0
                     , mtl
+                    , containers
                     , random
                     , vector
                     , primitive
                     , microlens
+                    , microlens-mtl
                     , microlens-th
+                    , transformers
 
 test-suite tests
   hs-source-dirs:     test
@@ -63,6 +68,7 @@ test-suite tests
                     , Algorithms.TestUtil
   build-depends:      base ^>=4.15.1.0
                     , QuickCheck
+                    , containers
                     , haskell-algorithms
                     , HUnit
                     , hspec
