@@ -37,7 +37,7 @@ library
                     , Algorithms.Sorting.Sort3
                     , Algorithms.Sorting.Utility
                     , Algorithms.Utility
-  build-depends:      base ^>=4.15.1.0
+  build-depends:      base >=4.15.1.0
                     , mtl
                     , random
                     , vector
@@ -61,7 +61,7 @@ test-suite tests
                     , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
                     , Algorithms.TestUtil
-  build-depends:      base ^>=4.15.1.0
+  build-depends:      base >=4.15.1.0
                     , QuickCheck
                     , haskell-algorithms
                     , HUnit
@@ -75,7 +75,7 @@ benchmark bench
   ghc-options:        -threaded -with-rtsopts=-N -with-rtsopts=-T -Wall
   type:               exitcode-stdio-1.0
   main-is:            Bench.hs
-  build-depends:      base ^>=4.15.1.0
+  build-depends:      base >=4.15.1.0
                     , haskell-algorithms
                     , criterion
                     , deepseq
