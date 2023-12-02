@@ -3,3 +3,6 @@ dist-newstyle/
 
 # Emacs
 .dir-locals-2.el
+
+# direnv
+.direnv
