@@ -101,7 +101,7 @@ growVectorConserve (GrowVector ref) = do
   (GrowVectorState v size capacity') <- readSTRef ref
   when (size < capacity') $ do
     v' <- MG.unsafeNew size
-    forM_ [0 .. size - 1] $ \i -> MG.read v i >>= MG.write v i
+    forM_ [0 .. size - 1] $ \i -> MG.read v i >>= MG.write v' i
     writeSTRef ref (GrowVectorState v' size size)
 
 growVectorShrink :: MG.MVector v a => GrowVector v s a -> Int -> ST s ()

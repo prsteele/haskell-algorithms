@@ -70,6 +70,8 @@ test-suite tests
                     , HUnit
                     , hspec
                     , microlens
+                    , mtl
+                    , primitive
                     , vector
 
 benchmark bench
