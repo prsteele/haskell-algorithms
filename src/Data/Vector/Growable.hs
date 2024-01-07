@@ -66,7 +66,8 @@ instance MG.MVector v a => GG.GrowVector (GrowVector v) a where
   basicReserve = growVectorReserve
   basicConserve = growVectorConserve
   basicShrink = growVectorShrink
-  basicMvector = growVectorMvector
+  basicMVector = growVectorMVector
+  basicLength = growVectorLength
   basicCapacity = growVectorCapacity
 
 growVectorNew :: MG.MVector v a => Int -> ST s (GrowVector v s a)
@@ -111,8 +112,8 @@ growVectorShrink (GrowVector ref) maxSize = do
     MG.clear (MG.slice maxSize (capacity' - maxSize) v)
     writeSTRef ref (GrowVectorState v maxSize capacity')
 
-growVectorMvector :: MG.MVector v a => GrowVector v s a -> ST s (v s a)
-growVectorMvector (GrowVector ref) = do
+growVectorMVector :: MG.MVector v a => GrowVector v s a -> ST s (v s a)
+growVectorMVector (GrowVector ref) = do
   (GrowVectorState v size _) <- readSTRef ref
   pure (MG.slice 0 size v)
 
@@ -120,6 +121,11 @@ growVectorCapacity :: GrowVector v s a -> ST s Int
 growVectorCapacity (GrowVector ref) = do
   (GrowVectorState _ _ capacity') <- readSTRef ref
   pure capacity'
+
+growVectorLength :: GrowVector v s a -> ST s Int
+growVectorLength (GrowVector ref) = do
+  (GrowVectorState _ length' _ ) <- readSTRef ref
+  pure length'
 
 -- | Create a new growable vector
 new :: (PrimMonad m, MG.MVector v a) => Int -> m (GrowVector v (PrimState m) a)

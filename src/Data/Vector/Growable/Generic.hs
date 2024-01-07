@@ -53,7 +53,8 @@ class (MG.MVector (MVector v) a) => GrowVector v a where
   basicReserve :: v s a -> Int -> ST s ()
   basicConserve :: v s a -> ST s ()
   basicShrink :: v s a -> Int -> ST s ()
-  basicMvector :: v s a -> ST s (MVector v s a)
+  basicMVector :: v s a -> ST s (MVector v s a)
+  basicLength :: v s a -> ST s Int
   basicCapacity :: v s a -> ST s Int
 
 -- | Create a new growable vector
@@ -106,7 +107,13 @@ shrink v = stToPrim . basicShrink v
 --
 -- Assumed complexity \(O(1)\).
 mvector :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m (MVector v (PrimState m) a)
-mvector = stToPrim . basicMvector
+mvector = stToPrim . basicMVector
+
+-- | The current length of the vector.
+--
+-- Assumed complexity \(O(1)\).
+length :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m Int
+length = stToPrim . basicLength
 
 -- | The current capacity of the vector.
 --
