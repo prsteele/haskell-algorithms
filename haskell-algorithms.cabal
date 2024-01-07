@@ -80,7 +80,7 @@ benchmark bench
   ghc-options:        -threaded -with-rtsopts=-N -with-rtsopts=-T -Wall
   type:               exitcode-stdio-1.0
   main-is:            Bench.hs
-  build-depends:      base ^>=4.15.1.0
+  build-depends:      base >=4.16.4.0
                     , haskell-algorithms
                     , criterion
                     , deepseq
