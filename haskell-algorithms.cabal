@@ -37,6 +37,10 @@ library
                     , Algorithms.Sorting.Sort3
                     , Algorithms.Sorting.Utility
                     , Algorithms.Utility
+                    , Data.Heap
+                    , Data.Heap.Generic
+                    , Data.Heap.Intrusive
+                    , Data.Heap.Heap
                     , Data.Vector.Growable
                     , Data.Vector.Growable.Generic
   build-depends:      base >=4.16.4.0
@@ -53,7 +57,8 @@ test-suite tests
   ghc-options:        -threaded -with-rtsopts=-N -Wall
   type:               exitcode-stdio-1.0
   main-is:            Spec.hs
-  other-modules:      Algorithms.PermutationsSpec
+  other-modules:      Algorithms.Heap.VectorSpec
+                    , Algorithms.PermutationsSpec
                     , Algorithms.MaximumSubArraySpec
                     , Algorithms.Sorting.CountingSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
@@ -63,6 +68,7 @@ test-suite tests
                     , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
                     , Algorithms.TestUtil
+                    , Data.Heap.HeapSpec
                     , Data.Vector.GrowableSpec
   build-depends:      base >=4.16.4.0
                     , QuickCheck

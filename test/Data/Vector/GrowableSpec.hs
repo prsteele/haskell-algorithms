@@ -16,40 +16,40 @@ spec :: Spec
 spec =
   describe "GrowVectors" $ do
     it "can grow" $ do
-      gv <- GV.new 10
+      gv <- GV.new GV.mvector 10
       forM_ [1 .. 100 :: Int] $ \i -> do
         GV.append gv i
-        v <- GV.mvector gv >>= V.freeze
+        v <- GV.unsafeMVector gv >>= V.freeze
         v `shouldBe` V.fromList [1 .. i]
     it "can grow from an empty vector" $ do
-      gv <- GV.new 0
+      gv <- GV.new GV.mvector 0
       forM_ [1 .. 100 :: Int] $ \i -> do
         GV.append gv i
-        v <- GV.mvector gv >>= V.freeze
+        v <- GV.unsafeMVector gv >>= V.freeze
         v `shouldBe` V.fromList [1 .. i]
     it "can augment existing MVectors" $ do
       mv <- V.thaw (V.fromList [1 .. 20 :: Int])
       gv <- GV.fromMVector mv
       forM_ [21 .. 100] $ \i -> do
         GV.append gv i
-        v <- GV.mvector gv >>= V.freeze
+        v <- GV.unsafeMVector gv >>= V.freeze
         v `shouldBe` V.fromList [1 .. i]
     it "can augment existing Vectors" $ do
       gv <- GV.fromVector (V.fromList [1 .. 20 :: Int])
       forM_ [21 .. 100] $ \i -> do
         GV.append gv i
-        v <- GV.mvector gv >>= V.freeze
+        v <- GV.unsafeMVector gv >>= V.freeze
         v `shouldBe` V.fromList [1 .. i]
     it "can be shrunk" $ do
       gv <- GV.fromVector (V.fromList [1 .. 20 :: Int])
       GV.shrink gv 10
-      v <- GV.mvector gv >>= V.freeze
+      v <- GV.unsafeMVector gv >>= V.freeze
       v `shouldBe` V.fromList [1 .. 10]
     prop "behaves correctly" $ \initState actions -> do
       let expected = evalActionsList initState actions :: [Int]
       gv <- V.thaw (V.fromList initState) >>= GV.fromMVector
       evalActions gv actions
-      mv <- GV.mvector gv
+      mv <- GV.unsafeMVector gv
       result <- fmap V.toList (V.freeze mv)
       result `shouldBe` expected
 
@@ -86,8 +86,7 @@ evalActions gv = mapM_ eval
     eval Conserve = GG.conserve gv
     eval (Shrink (NonNegative i)) = GG.shrink gv i
     eval Capacity = void (GG.capacity gv)
-    eval Mutate = do
-      mv <- GG.mvector gv
+    eval Mutate = GG.modifying gv $ \mv -> do
       let n = MG.length mv
       when (n > 0) $ do
         x <- MG.read mv 0

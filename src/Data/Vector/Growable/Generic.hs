@@ -8,6 +8,7 @@ module Data.Vector.Growable.Generic where
 import Control.Monad.Primitive
 import Control.Monad.ST
 import Data.Kind
+import Data.Proxy
 import qualified Data.Vector.Generic as G
 import qualified Data.Vector.Generic.Mutable as MG
 import qualified Data.Vector.Generic.New as GN
@@ -15,13 +16,14 @@ import qualified Data.Vector.Generic.New as GN
 -- | A vector that can grow (and shrink).
 --
 -- Although a `GrowVector` is not a `Data.Vector.Generic.Mutable`
--- instance, you can get at one via the `mvector` method. The reason
--- for this indirection is the `Data.Vector.Generic.Mutable.length`
--- method, which requires the length of the vector to be known purely.
--- While it would be possible to store the length of a growable vector
--- in a way so as to satisfy this API, it would make it easy for stale
--- references to contain garbage length values. In the following
--- example, imagine we have declared `GrowVector` to implement
+-- instance, you can get at one via the `modifying` or
+-- `unsafeMVector` methods. The reason for this indirection is the
+-- `Data.Vector.Generic.Mutable.length` method, which requires the
+-- length of the vector to be known purely. While it would be possible
+-- to store the length of a growable vector in a way so as to satisfy
+-- this API, it would make it easy for stale references to contain
+-- garbage length values. In the following example, imagine we have
+-- declared `GrowVector` to implement
 -- `Data.Vector.Mutable.Generic.MVector`.
 --
 -- @
@@ -47,7 +49,7 @@ import qualified Data.Vector.Generic.New as GN
 class (MG.MVector (MVector v) a) => GrowVector v a where
   type MVector v :: Type -> Type -> Type
 
-  basicNew :: Int -> ST s (v s a)
+  basicNew :: Proxy v -> Int -> ST s (v s a)
   basicFromMVector :: MVector v s a -> ST s (v s a)
   basicAppend :: v s a -> a -> ST s ()
   basicReserve :: v s a -> Int -> ST s ()
@@ -58,8 +60,8 @@ class (MG.MVector (MVector v) a) => GrowVector v a where
   basicCapacity :: v s a -> ST s Int
 
 -- | Create a new growable vector
-new :: (PrimMonad m, GrowVector v a) => Int -> m (v (PrimState m) a)
-new = stToPrim . basicNew
+new :: (PrimMonad m, GrowVector v a) => Proxy v -> Int -> m (v (PrimState m) a)
+new v = stToPrim . basicNew v
 
 -- | Create a new growable vector from an existing mutable vector.
 --
@@ -106,8 +108,8 @@ shrink v = stToPrim . basicShrink v
 -- `reserve`, or `conserve` are called.
 --
 -- Assumed complexity \(O(1)\).
-mvector :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m (MVector v (PrimState m) a)
-mvector = stToPrim . basicMVector
+unsafeMVector :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m (MVector v (PrimState m) a)
+unsafeMVector = stToPrim . basicMVector
 
 -- | Modify the underlying mutable vector.
 --
@@ -116,7 +118,7 @@ mvector = stToPrim . basicMVector
 -- `conserve` are called.
 modifying :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> (MVector v (PrimState m) a -> m b) -> m b
 modifying gv f = do
-  mv <- mvector gv
+  mv <- unsafeMVector gv
   f mv
 
 -- | The current length of the vector.
