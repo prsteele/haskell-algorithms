@@ -2,33 +2,57 @@
   description = "Common datastructures and algorithms";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
+    systems.url = "github:nix-systems/default";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-        haskellPackages = pkgs.haskellPackages;
-        package = "haskell-algorithms";
-        local = haskellPackages.callCabal2nix package self { };
-      in
+  outputs = { self, nixpkgs, systems, ... }:
+    let
+      forAllSystems = nixpkgs.lib.genAttrs (import systems);
+    in
+    {
+      packages = forAllSystems
+        (system:
+          let
+            pkgs = nixpkgs.legacyPackages.${system};
+            local = pkgs.haskellPackages.callCabal2nix "haskell-algorithms" self { };
+          in
+          {
+            default = local;
+            haskell-algorithms = local;
+
+            test = pkgs.writeScriptBin "test"
+              ''
+                cabal test --test-show-details=always "$@"
+              '';
+          }
+        );
+
+      overlays = {
+        default = final: prev: {
+          haskellPackages = prev.haskellPackages.override {
+            overrides = hfinal: hprev: {
+              haskell-algorithms = hprev.callCabal2nix "haskell-algorithms" self { };
+            };
+          };
+        };
+      };
+
+      devShells = forAllSystems (system:
+        let
+          pkgs = nixpkgs.legacyPackages.${system};
+        in
         {
-          packages.${package} = local;
-          packages.default = self.packages.${system}.${package};
-          defaultPackage = self.packages.${system}.default;
-          devShells.default = pkgs.haskellPackages.shellFor {
-            packages = p: [ local ];
+          default = pkgs.haskellPackages.shellFor {
+            packages = ps: [ self.packages.${system}.default ];
             buildInputs = [
               pkgs.haskellPackages.haskell-language-server
               pkgs.ormolu
               pkgs.cabal-install
             ];
             withHoogle = true;
-            doBenchmark = true;
           };
-          devShell = self.devShells.${system}.default;
         }
-    );
+      );
+    };
 }
