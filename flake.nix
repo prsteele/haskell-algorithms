@@ -26,9 +26,9 @@
               in
               pkgs.writeShellApplication {
                 name = "test";
-                runtimeInputs = shell.buildInputs ++ shell.nativeBuildInputs;
+                runtimeInputs = [ pkgs.cabal-install ] ++ shell.nativeBuildInputs;
                 text = ''
-                  cabal --active-repositories=:none test --test-show-details=always "$@"
+                  cabal --active-repositories=:none v1-test --show-details=always "$@"
                 '';
               };
           }
