@@ -20,10 +20,17 @@
           {
             default = pkgs.haskellPackages.haskell-algorithms;
 
-            test = pkgs.writeScriptBin "test"
-              ''
-                cabal test --test-show-details=always "$@"
-              '';
+            test =
+              let
+                shell = self.devShells.${system}.default;
+              in
+              pkgs.writeShellApplication {
+                name = "test";
+                runtimeInputs = [ pkgs.cabal-install ] ++ shell.nativeBuildInputs;
+                text = ''
+                  cabal --config-file /dev/null --active-repositories=:none test --test-show-details=always "$@"
+                '';
+              };
           }
         );
 
