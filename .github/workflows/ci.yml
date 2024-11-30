@@ -14,8 +14,9 @@ permissions:
 
 jobs:
   build:
-    runs-on: nixos/nix
-
+    runs-on: [ ubuntu-latest ]
+    container:
+      image: nixos/nix
     steps:
       - uses: actions/checkout@v4
       - uses: DeterminateSystems/magic-nix-cache-action@main
