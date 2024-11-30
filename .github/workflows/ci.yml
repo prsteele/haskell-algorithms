@@ -20,4 +20,4 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: "Tests"
-        run: nix run .#test
+        run: nix develop --command cabal test --test-show-details=always
