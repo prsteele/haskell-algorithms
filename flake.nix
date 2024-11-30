@@ -28,7 +28,7 @@
                 name = "test";
                 runtimeInputs = shell.buildInputs ++ shell.nativeBuildInputs;
                 text = ''
-                  cabal test --test-show-details=always "$@"
+                  cabal --active-repositories=:none test --test-show-details=always "$@"
                 '';
               };
           }
