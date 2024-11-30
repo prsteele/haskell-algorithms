@@ -1,34 +1,59 @@
 {
-  description = "Common datastructures and algorithms";
+  description = "Common data structures and algorithms";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs";
-    flake-utils.url = "github:numtide/flake-utils";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.11";
+    systems.url = "github:nix-systems/default";
   };
 
-  outputs = { self, nixpkgs, flake-utils }:
-    flake-utils.lib.eachDefaultSystem (system:
-      let
-        pkgs = nixpkgs.legacyPackages.${system};
-        haskellPackages = pkgs.haskellPackages;
-        package = "haskell-algorithms";
-        local = haskellPackages.callCabal2nix package self { };
-      in
+  outputs = { self, nixpkgs, systems, ... }:
+    let
+      forAllSystems = nixpkgs.lib.genAttrs (import systems);
+      mkPkgs = system: import nixpkgs { inherit system; overlays = [ self.overlays.default ]; };
+    in
+    {
+      packages = forAllSystems
+        (system:
+          let
+            pkgs = mkPkgs system;
+          in
+          {
+            default = pkgs.haskellPackages.haskell-algorithms;
+
+            test = pkgs.writeScriptBin "test"
+              ''
+                cabal test --test-show-details=always "$@"
+              '';
+          }
+        );
+
+      devShells = forAllSystems (system:
+        let
+          pkgs = mkPkgs system;
+        in
         {
-          packages.${package} = local;
-          packages.default = self.packages.${system}.${package};
-          defaultPackage = self.packages.${system}.default;
-          devShells.default = pkgs.haskellPackages.shellFor {
-            packages = p: [ local ];
+          default = pkgs.haskellPackages.shellFor {
+            packages = hpkgs: [ hpkgs.haskell-algorithms ];
+
             buildInputs = [
               pkgs.haskellPackages.haskell-language-server
               pkgs.ormolu
               pkgs.cabal-install
             ];
+
             withHoogle = true;
-            doBenchmark = true;
           };
-          devShell = self.devShells.${system}.default;
         }
-    );
+      );
+
+      overlays = {
+        default = final: prev: {
+          haskellPackages = prev.haskellPackages.override {
+            overrides = hfinal: hprev: {
+              haskell-algorithms = hfinal.callCabal2nix "haskell-algorithms" self { };
+            };
+          };
+        };
+      };
+    };
 }
