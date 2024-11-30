@@ -15,10 +15,9 @@ permissions:
 jobs:
   build:
     runs-on: [ ubuntu-latest ]
-    container:
-      image: nixos/nix
     steps:
       - uses: actions/checkout@v4
+      - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - name: "Tests"
-        run: nix --extra-experimental-features 'nix-command flakes' run .#test
+        run: nix run .#test
