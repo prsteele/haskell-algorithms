@@ -1,5 +1,5 @@
 {
-  description = "Common datastructures and algorithms";
+  description = "Common data structures and algorithms";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-23.11";
@@ -9,17 +9,16 @@
   outputs = { self, nixpkgs, systems, ... }:
     let
       forAllSystems = nixpkgs.lib.genAttrs (import systems);
+      mkPkgs = system: import nixpkgs { inherit system; overlays = [ self.overlays.default ]; };
     in
     {
       packages = forAllSystems
         (system:
           let
-            pkgs = nixpkgs.legacyPackages.${system};
-            local = pkgs.haskellPackages.callCabal2nix "haskell-algorithms" self { };
+            pkgs = mkPkgs system;
           in
           {
-            default = local;
-            haskell-algorithms = local;
+            default = pkgs.haskellPackages.haskell-algorithms;
 
             test = pkgs.writeScriptBin "test"
               ''
@@ -28,31 +27,33 @@
           }
         );
 
-      overlays = {
-        default = final: prev: {
-          haskellPackages = prev.haskellPackages.override {
-            overrides = hfinal: hprev: {
-              haskell-algorithms = hprev.callCabal2nix "haskell-algorithms" self { };
-            };
-          };
-        };
-      };
-
       devShells = forAllSystems (system:
         let
-          pkgs = nixpkgs.legacyPackages.${system};
+          pkgs = mkPkgs system;
         in
         {
           default = pkgs.haskellPackages.shellFor {
-            packages = ps: [ self.packages.${system}.default ];
+            packages = hpkgs: [ hpkgs.haskell-algorithms ];
+
             buildInputs = [
               pkgs.haskellPackages.haskell-language-server
               pkgs.ormolu
               pkgs.cabal-install
             ];
+
             withHoogle = true;
           };
         }
       );
+
+      overlays = {
+        default = final: prev: {
+          haskellPackages = prev.haskellPackages.override {
+            overrides = hfinal: hprev: {
+              haskell-algorithms = hfinal.callCabal2nix "haskell-algorithms" self { };
+            };
+          };
+        };
+      };
     };
 }
