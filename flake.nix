@@ -28,7 +28,7 @@
                 name = "test";
                 runtimeInputs = [ pkgs.cabal-install ] ++ shell.nativeBuildInputs;
                 text = ''
-                  cabal --active-repositories=:none v1-test --show-details=always "$@"
+                  cabal --config-file /dev/null --active-repositories=:none test --test-show-details=always "$@"
                 '';
               };
           }
