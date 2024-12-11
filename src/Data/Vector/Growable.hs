@@ -28,6 +28,7 @@ module Data.Vector.Growable
 
     -- ** Manipulation
     mvector,
+    modifying,
   )
 where
 
@@ -175,6 +176,9 @@ shrink = GG.shrink
 -- `GrowVector` might be pointing to a new `MVector`.
 mvector :: (PrimMonad m, MG.MVector v a) => GrowVector v (PrimState m) a -> m (v (PrimState m) a)
 mvector = GG.mvector
+
+modifying :: (PrimMonad m, MG.MVector v a) => GrowVector v (PrimState m) a -> (v (PrimState m) a -> m b) -> m b
+modifying = GG.modifying
 
 -- | The current capacity of the vector.
 --

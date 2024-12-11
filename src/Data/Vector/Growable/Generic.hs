@@ -109,6 +109,16 @@ shrink v = stToPrim . basicShrink v
 mvector :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m (MVector v (PrimState m) a)
 mvector = stToPrim . basicMVector
 
+-- | Modify the underlying mutable vector.
+--
+-- The underlying vector should not be exfiltrated from this function,
+-- since this value is only safe to use until `append`, `reserve`, or
+-- `conserve` are called.
+modifying :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> (MVector v (PrimState m) a -> m b) -> m b
+modifying gv f = do
+  mv <- mvector gv
+  f mv
+
 -- | The current length of the vector.
 --
 -- Assumed complexity \(O(1)\).
