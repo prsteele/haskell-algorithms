@@ -27,11 +27,13 @@ module Data.Vector.Growable
     unsafeMVector,
 
     -- ** Type aliases and proxies
-    growVector,
+    growVectorOf,
     mvector,
     unboxedMVector,
     primitiveMVector,
     storableMVector,
+    IOGrowMVector,
+    STGrowMVector,
   )
 where
 
@@ -211,8 +213,8 @@ capacity = GG.capacity
 --
 -- This can be used to disambiguate the type of vectors used,
 -- especially in intermediate terms, for example with 'asProxyTypeOf'.
-growVector :: Proxy mv -> Proxy (GrowVector mv)
-growVector _ = Proxy
+growVectorOf :: Proxy mv -> Proxy (GrowVector mv)
+growVectorOf _ = Proxy
 
 -- | A proxy for boxed mutable vectors.
 --
@@ -241,3 +243,6 @@ storableMVector = Proxy
 -- especially in intermediate terms, for example with 'asProxyTypeOf'.
 primitiveMVector :: Proxy PV.MVector
 primitiveMVector = Proxy
+
+type IOGrowMVector = GrowVector MV.MVector RealWorld
+type STGrowMVector s = GrowVector MV.MVector s

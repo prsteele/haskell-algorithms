@@ -160,10 +160,6 @@ right = succ . left
 parent :: Int -> Int
 parent i = (i - 1) `div` 2
 
--- Type specializations
---mvectorHeap :: Proxy (GG.GrowV)
-
-
 new ::
   (PrimMonad m, GG.GrowVector v a, Ord a, s ~ PrimState m) =>
   Proxy (Heap v) ->
@@ -218,3 +214,10 @@ heapIncrease ::
   a ->
   m ()
 heapIncrease = HG.heapIncrease
+
+-- | A function converting a (proxy) growable vector to a (proxy) heap.
+heapOf :: Proxy gv -> Proxy (Heap gv)
+heapOf _ = Proxy
+
+type IOHeapMVector = Heap (GV.GrowVector MV.MVector) RealWorld
+type STHeapMVector s = Heap (GV.GrowVector MV.MVector) s

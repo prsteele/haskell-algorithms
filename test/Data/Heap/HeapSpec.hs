@@ -1,17 +1,13 @@
-{-# LANGUAGE TypeOperators #-}
 module Data.Heap.HeapSpec where
 
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck
-import Control.Monad.Primitive
 import qualified Data.Heap as H
 import qualified Data.Heap.Generic as HG
-import Control.Monad
 import Control.Monad.ST
 import qualified Data.Vector.Mutable as MV
 import qualified Data.Vector.Growable as GV
-import Data.Proxy
 
 spec :: Spec
 spec = do
@@ -32,11 +28,8 @@ make = do
   gv <- GV.fromMVector mv
   pure (H.Heap gv)
 
-heap :: Proxy v -> Proxy (H.Heap v)
-heap _ = Proxy
-
 make' :: Ord a => ST s (H.Heap (GV.GrowVector MV.MVector) s a)
-make' = HG.new (heap (GV.growVector GV.mvector)) 0
+make' = HG.new (H.heapOf (GV.growVectorOf GV.mvector)) 0
 
 poppedGreatest :: [Int] -> Bool
 poppedGreatest xs =
@@ -45,7 +38,7 @@ poppedGreatest xs =
       [] -> Nothing
       _ -> Just (maximum xs)
   in runST $ do
-    h <- HG.new (heap (GV.growVector GV.mvector)) 0
+    h <- HG.new (H.heapOf (GV.growVectorOf GV.mvector)) 0
     pushAll h xs
     x <- HG.heapPop h
     pure (x == greatest)
