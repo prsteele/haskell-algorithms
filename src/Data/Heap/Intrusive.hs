@@ -23,11 +23,10 @@ type IntrusiveHandle s = STRef s (Maybe Int)
 newtype IntrusiveHeap v s a = IntrusiveHeap (v s (a, IntrusiveHandle s))
 
 instance
-  ( forall s. GG.GrowVector v (a, IntrusiveHandle s),
-    Ord a
-  ) =>
+  (forall s. GG.GrowVector v (a, IntrusiveHandle s), Ord a) =>
   HG.Heap (IntrusiveHeap v) a
   where
+  basicNew = intrusiveHeapBasicNew
   basicHeapify = intrusiveHeapBasicHeapify
   basicHeapPush = intrusiveHeapBasicPush
   basicHeapPeek = intrusiveHeapBasicPeek
@@ -303,7 +302,6 @@ intrusiveHeapBasicHeapPriority' (IntrusiveHeap gv) ref =
     case mIx of
       Nothing -> pure Nothing
       Just ix -> fmap (pure . fst) (MG.read mv ix)
-
 
 heapify ::
   (forall t. GG.GrowVector v (a, IntrusiveHandle t), PrimMonad m, s ~ PrimState m, Ord a) =>
