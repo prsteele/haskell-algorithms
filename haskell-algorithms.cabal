@@ -59,6 +59,9 @@ library
                     , Algorithms.Utility
                     , Data.Vector.Growable
                     , Data.Vector.Growable.Generic
+                    , Data.Vector.Growable.Primitive
+                    , Data.Vector.Growable.Storable
+                    , Data.Vector.Growable.Unboxed
   build-depends:      base >=4.16.4.0
                     , mtl
                     , random

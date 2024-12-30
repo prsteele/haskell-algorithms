@@ -1,27 +1,59 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE TypeOperators #-}
 
-module Data.Vector.Growable.Generic where
+module Data.Vector.Growable.Generic
+  ( -- * Growable vectors
+    GrowVector (..),
 
+    -- ** Construction
+    empty,
+    thaw,
+    fromMVector,
+    fromVector,
+
+    -- *** Destruction
+    freeze,
+
+    -- ** Accessors
+    length,
+    capacity,
+
+    -- ** Growing and shrinking
+    append,
+    reserve,
+    conserve,
+    shrink,
+
+    -- ** Accessing individual elements
+    read,
+    readMaybe,
+    write,
+    swap,
+
+    -- *** Access the underlying 'MVector'
+    withMVector,
+    unsafeWithMVector,
+  )
+where
+
+import Control.Monad
 import Control.Monad.Primitive
 import Control.Monad.ST
 import Data.Kind
 import qualified Data.Vector.Generic as G
 import qualified Data.Vector.Generic.Mutable as MG
-import qualified Data.Vector.Generic.New as GN
+import Prelude hiding (length, read)
 
 -- | A vector that can grow (and shrink).
 --
 -- Although a `GrowVector` is not a `Data.Vector.Generic.Mutable`
--- instance, you can get at one via the `mvector` method. The reason
--- for this indirection is the `Data.Vector.Generic.Mutable.length`
--- method, which requires the length of the vector to be known purely.
--- While it would be possible to store the length of a growable vector
--- in a way so as to satisfy this API, it would make it easy for stale
--- references to contain garbage length values. In the following
--- example, imagine we have declared `GrowVector` to implement
+-- instance, you can get at one via the `modifying` or
+-- `unsafeMVector` methods. The reason for this indirection is the
+-- `Data.Vector.Generic.Mutable.length` method, which requires the
+-- length of the vector to be known purely. While it would be possible
+-- to store the length of a growable vector in a way so as to satisfy
+-- this API, it would make it easy for stale references to contain
+-- garbage length values. In the following example, imagine we have
+-- declared `GrowVector` to implement
 -- `Data.Vector.Mutable.Generic.MVector`.
 --
 -- @
@@ -47,7 +79,7 @@ import qualified Data.Vector.Generic.New as GN
 class (MG.MVector (MVector v) a) => GrowVector v a where
   type MVector v :: Type -> Type -> Type
 
-  basicNew :: Int -> ST s (v s a)
+  basicEmpty :: Int -> ST s (v s a)
   basicFromMVector :: MVector v s a -> ST s (v s a)
   basicAppend :: v s a -> a -> ST s ()
   basicReserve :: v s a -> Int -> ST s ()
@@ -57,9 +89,28 @@ class (MG.MVector (MVector v) a) => GrowVector v a where
   basicLength :: v s a -> ST s Int
   basicCapacity :: v s a -> ST s Int
 
--- | Create a new growable vector
-new :: (PrimMonad m, GrowVector v a) => Int -> m (v (PrimState m) a)
-new = stToPrim . basicNew
+  basicWrite :: v s a -> Int -> a -> ST s ()
+  basicWrite gv i x = withMVector gv (\mv -> MG.write mv i x)
+
+  basicRead :: v s a -> Int -> ST s a
+  basicRead gv i = withMVector gv (`MG.read` i)
+
+  basicReadMaybe :: v s a -> Int -> ST s (Maybe a)
+  basicReadMaybe gv i = withMVector gv (`MG.readMaybe` i)
+
+-- | Create an empty growable vector with the given initial capacity.
+empty :: (PrimMonad m, GrowVector v a) => Int -> m (v (PrimState m) a)
+empty = stToPrim . basicEmpty
+
+-- | Create an immutable copy of the grow vector.
+freeze :: (PrimMonad m, s ~ PrimState m, G.Vector v a, MVector gv ~ G.Mutable v, GrowVector gv a) => gv s a -> m (v a)
+freeze = stToPrim . flip withMVector G.freeze
+
+-- | Create a growable copy of the vector.
+--
+-- Assumed complexity \(O(n)\).
+thaw :: (PrimMonad m, s ~ PrimState m, G.Vector v a, MVector gv ~ G.Mutable v, GrowVector gv a) => v a -> m (gv s a)
+thaw = stToPrim . (G.thaw >=> basicFromMVector)
 
 -- | Create a new growable vector from an existing mutable vector.
 --
@@ -70,14 +121,14 @@ new = stToPrim . basicNew
 fromMVector :: (PrimMonad m, GrowVector v a) => MVector v (PrimState m) a -> m (v (PrimState m) a)
 fromMVector = stToPrim . basicFromMVector
 
--- | Create a new growabe vector from an existing vector.
+-- | Create a new growable vector from an existing vector.
 --
--- Assumed complexity \(O(n)\).
+-- This is an alias of 'thaw'.
 fromVector ::
   (MVector gv ~ G.Mutable v, PrimMonad m, G.Vector v a, GrowVector gv a) =>
   v a ->
   m (gv (PrimState m) a)
-fromVector v = GN.runPrim (G.clone v) >>= fromMVector
+fromVector = thaw
 
 -- | Append an element to the vector, growing if necessary.
 --
@@ -100,14 +151,26 @@ conserve = stToPrim . basicConserve
 shrink :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> m ()
 shrink v = stToPrim . basicShrink v
 
--- | Access the underlying mutable vector.
+-- | Manipulate the underlying mutable vector.
+--
+-- The underlying vector should not be exfiltrated from this function,
+-- since this value is only safe to use until `append`, `reserve`, or
+-- `conserve` are called.
+withMVector :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> (MVector v (PrimState m) a -> m b) -> m b
+withMVector gv f = do
+  len <- length gv
+  mv <- unsafeWithMVector gv
+  f (MG.slice 0 len mv)
+
+-- | Manipulate the entire underlying mutable vector, including allocated
+-- but unused space.
 --
 -- It is likely this value is only safe to use until `append`,
 -- `reserve`, or `conserve` are called.
 --
 -- Assumed complexity \(O(1)\).
-mvector :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m (MVector v (PrimState m) a)
-mvector = stToPrim . basicMVector
+unsafeWithMVector :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m (MVector v (PrimState m) a)
+unsafeWithMVector = stToPrim . basicMVector
 
 -- | The current length of the vector.
 --
@@ -123,3 +186,19 @@ length = stToPrim . basicLength
 -- Assumed complexity \(O(1)\).
 capacity :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m Int
 capacity = stToPrim . basicCapacity
+
+write :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> a -> m ()
+write v i = stToPrim . basicWrite v i
+
+read :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> m a
+read v = stToPrim . basicRead v
+
+readMaybe :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> m (Maybe a)
+readMaybe v = stToPrim . basicReadMaybe v
+
+swap :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> Int -> m ()
+swap gv i j = do
+  xi <- read gv i
+  xj <- read gv j
+  write gv i xj
+  write gv j xi
