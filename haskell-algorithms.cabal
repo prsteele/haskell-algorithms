@@ -47,6 +47,7 @@ library
   exposed-modules:    Algorithms.MaximumSubArray
                     , Algorithms.Permutations
                     , Algorithms.Shuffle
+                    , Algorithms.ShortestPaths.Dijkstra
                     , Algorithms.Sorting
                     , Algorithms.Sorting.CountingSort
                     , Algorithms.Sorting.HeapSort
@@ -106,6 +107,7 @@ test-suite tests
   main-is:            Spec.hs
   other-modules:      Algorithms.PermutationsSpec
                     , Algorithms.MaximumSubArraySpec
+                    , Algorithms.ShortestPaths.DijkstraSpec
                     , Algorithms.Sorting.CountingSortSpec
                     , Algorithms.Sorting.HeapSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
