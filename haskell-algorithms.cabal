@@ -50,6 +50,7 @@ library
                     , Algorithms.Shuffle
                     , Algorithms.Sorting
                     , Algorithms.Sorting.CountingSort
+                    , Algorithms.Sorting.HeapSort
                     , Algorithms.Sorting.InsertionSort
                     , Algorithms.Sorting.MergeSort
                     , Algorithms.Sorting.Quicksort
@@ -107,6 +108,7 @@ test-suite tests
   other-modules:      Algorithms.PermutationsSpec
                     , Algorithms.MaximumSubArraySpec
                     , Algorithms.Sorting.CountingSortSpec
+                    , Algorithms.Sorting.HeapSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
                     , Algorithms.Sorting.MergeSortSpec
                     , Algorithms.Sorting.QuicksortSpec
@@ -114,6 +116,7 @@ test-suite tests
                     , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
                     , Algorithms.TestUtil
+                    , Data.Heap.HeapSpec
                     , Data.Vector.GrowableSpec
   build-depends:      base >=4.16.4.0
                     , containers

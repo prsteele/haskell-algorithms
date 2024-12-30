@@ -1,4 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
 {-# OPTIONS_GHC -Wno-unrecognised-pragmas #-}
 
 {-# HLINT ignore "Redundant lambda" #-}
@@ -6,6 +5,7 @@
 module Algorithms.Sorting.Utility where
 
 import Control.Monad.Primitive
+import Control.Monad.ST
 import Data.Ord (comparing)
 import qualified Data.Vector.Generic as G
 import qualified Data.Vector.Generic.Mutable as MG
@@ -36,3 +36,10 @@ mkMutSortOn mutSortBy = \f mv ->
         tagged <- G.freeze mv >>= G.thaw . G.map tag
         mutSortBy (comparing fst) tagged
         MG.iforM_ mv $ \i _ -> MG.read tagged i >>= MG.write mv i . snd
+
+mkSortBy :: (G.Vector v a) => (forall s. (a -> a -> Ordering) -> G.Mutable v s a -> ST s ()) -> (a -> a -> Ordering) -> v a -> v a
+{-# INLINEABLE mkSortBy #-}
+mkSortBy mutSortBy cmp = \v -> runST $ do
+  mv <- G.thaw v
+  mutSortBy cmp mv
+  G.freeze mv
