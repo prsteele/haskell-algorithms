@@ -10,20 +10,40 @@ description:
   interpretability, and efficiency.
 
 bug-reports: https://github.com/prsteele/haskell-algorithms/issues
-license: MIT
+license:            MIT
 author:             Patrick Steele
 maintainer:         steele.pat@gmail.com
 
--- copyright:
--- category:
-extra-source-files:
-    CHANGELOG.md
-    README.md
+common warnings
+    ghc-options: -Wall
+
+common extensions
+    default-extensions:
+        DeriveFunctor
+      , DeriveGeneric
+      , DeriveTraversable
+      , DuplicateRecordFields
+      , FlexibleContexts
+      , FlexibleInstances
+      , GeneralizedNewtypeDeriving
+      , LambdaCase
+      , MultiParamTypeClasses
+      , NoFieldSelectors
+      , OverloadedLabels
+      , OverloadedStrings
+      , OverloadedRecordDot
+      , QuantifiedConstraints
+      , Rank2Types
+      , ScopedTypeVariables
+      , TupleSections
+      , TypeApplications
+      , TypeFamilies
 
 library
+  import:             warnings
+                    , extensions
   hs-source-dirs:     src
   default-language:   Haskell2010
-  ghc-options:        -Wall
   exposed-modules:    Algorithms.MaximumSubArray
                     , Algorithms.Permutations
                     , Algorithms.Sequence
@@ -48,9 +68,11 @@ library
                     , microlens-th
 
 test-suite tests
+  import:             warnings
+                    , extensions
   hs-source-dirs:     test
   default-language:   Haskell2010
-  ghc-options:        -threaded -with-rtsopts=-N -Wall
+  ghc-options:        -threaded -with-rtsopts=-N
   type:               exitcode-stdio-1.0
   main-is:            Spec.hs
   other-modules:      Algorithms.PermutationsSpec
