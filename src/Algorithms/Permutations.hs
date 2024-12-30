@@ -51,4 +51,4 @@ instance (Ord a, Ord b) => Ord (By2 a b) where
   compare (By2 (x, y)) (By2 (x', y')) = compare y y' <> compare x x'
 
 sortWithIndices :: (G.Vector v a, Ord a) => v a -> V.Vector (Int, a)
-sortWithIndices = V.map unBy2 . mergeSort . V.map By2 . V.indexed . G.convert
+sortWithIndices = V.map (.unBy2) . mergeSort . V.map By2 . V.indexed . G.convert

@@ -3,7 +3,7 @@ module Algorithms.MaximumSubArraySpec where
 import Algorithms.MaximumSubArray
 import Algorithms.TestUtil
 import qualified Data.Vector as V
-import Lens.Micro
+import Optics
 import Test.Hspec
 import Test.Hspec.QuickCheck
 
@@ -28,9 +28,9 @@ runAssertions (IntVector v) =
   let maxSub = maximumSubArrayNum v
    in do
         -- Check against the brute-force solution
-        (maxSub ^. value) `shouldBe` (bruteMaximumSubArray v ^. value)
+        (maxSub ^. #value) `shouldBe` (bruteMaximumSubArray v ^. #value)
 
         -- Check that the sum agrees with the stated indices
-        let i = maxSub ^. slice . lo
-            j = maxSub ^. slice . hi
-        (maxSub ^. value) `shouldBe` V.sum (V.slice i (j - i) v)
+        let i = maxSub ^. #slice % #lo
+            j = maxSub ^. #slice % #hi
+        (maxSub ^. #value) `shouldBe` V.sum (V.slice i (j - i) v)

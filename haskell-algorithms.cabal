@@ -63,9 +63,8 @@ library
                     , mtl
                     , random
                     , vector
+                    , optics
                     , primitive
-                    , microlens
-                    , microlens-th
 custom-setup
   setup-depends:
       base >=4.16.4.0
@@ -110,8 +109,8 @@ test-suite tests
                     , haskell-algorithms
                     , HUnit
                     , hspec
-                    , microlens
                     , mtl
+                    , optics
                     , primitive
                     , vector
 
