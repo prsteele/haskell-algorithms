@@ -19,6 +19,22 @@
           in
           {
             default = pkgs.haskellPackages.haskell-algorithms;
+
+            format = pkgs.writeShellApplication {
+              name = "format";
+              runtimeInputs = [ pkgs.git pkgs.ormolu pkgs.findutils ];
+              text = ''
+                git ls-files -z '*.hs' | xargs -0 -I{} ormolu --mode inplace {}
+              '';
+            };
+
+            check-formatting = pkgs.writeShellApplication {
+              name = "format";
+              runtimeInputs = [ pkgs.git pkgs.ormolu pkgs.findutils ];
+              text = ''
+                git ls-files -z '*.hs' | xargs -0 -I{} ormolu --mode check {}
+              '';
+            };
           }
         );
 

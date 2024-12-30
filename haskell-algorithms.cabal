@@ -66,6 +66,25 @@ library
                     , primitive
                     , microlens
                     , microlens-th
+custom-setup
+  setup-depends:
+      base >=4.16.4.0
+    , cabal-doctest
+    , Cabal
+
+test-suite doctests
+  import:             warnings
+                    , extensions
+  default-language:   Haskell2010
+  type:               exitcode-stdio-1.0
+  hs-source-dirs:     test
+  main-is:            Doctest.hs
+  build-depends:      base >=4.16.4.0
+                    , doctest
+                    , ghc
+                    , ghc-paths
+                    , haskell-algorithms
+                    , QuickCheck
 
 test-suite tests
   import:             warnings
