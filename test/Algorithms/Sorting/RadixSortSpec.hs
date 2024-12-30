@@ -24,7 +24,7 @@ spec = do
             -- We inline isStableSortingAlgorithm since we need to change
             -- our radix function to run the stability tests
             isSortingAlgorithm (sort twosComplementRadix) v
-            isStablySorted (sort (twosComplementRadix . _value) v')
+            isStablySorted (sort (twosComplementRadix . (.value)) v')
   describe "exampleTupleRadixSort" $
     prop "is a sorting algorithm" $
       isSortingAlgorithm exampleTupleRadixSort . V.fromList

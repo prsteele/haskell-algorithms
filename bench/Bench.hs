@@ -10,7 +10,7 @@ import qualified Data.Vector as V
 import System.Random
 import System.Random.Stateful
 
-randomVec :: StatefulGen g IO => Int -> g -> IO (V.Vector Double)
+randomVec :: (StatefulGen g IO) => Int -> g -> IO (V.Vector Double)
 randomVec n = fmap V.fromList . replicateM n . uniformRM (-1e10, 1e10)
 
 genSizes :: Int -> [Int]
@@ -51,7 +51,7 @@ mkInsertionSortBenchmarks =
 instance NFData Slice where
   rnf (Slice i j) = seq i (seq j ())
 
-instance NFData a => NFData (SubArraySum a) where
+instance (NFData a) => NFData (SubArraySum a) where
   rnf (SubArraySum x y) = seq x (seq y ())
 
 mkMaximumSubArrayBenchmarks :: IO [Benchmark]

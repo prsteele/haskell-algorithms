@@ -31,7 +31,7 @@ import System.Random.Stateful
 -- +============+============+
 -- | In-place   | No         |
 -- +------------+------------+
-shuffle :: G.Vector v a => Int -> v a -> v a
+shuffle :: (G.Vector v a) => Int -> v a -> v a
 shuffle seed v = runST $ do
   mv <- G.thaw v
   gen <- newSTGenM (mkStdGen seed)
@@ -45,7 +45,7 @@ shuffle seed v = runST $ do
 -- +============+============+
 -- | In-place   | No         |
 -- +------------+------------+
-shuffleIO :: G.Vector v a => v a -> IO (v a)
+shuffleIO :: (G.Vector v a) => v a -> IO (v a)
 shuffleIO v = do
   mv <- G.thaw v
   mutShuffle globalStdGen mv
@@ -64,7 +64,7 @@ mutShuffle :: (StatefulGen g m, PrimMonad m, MG.MVector v a) => g -> v (PrimStat
 mutShuffle g v = do
   forM_ ((MG.length v - 1) `downTo` 1) $ \i -> do
     j <- uniformRM (0, i) g
-    swap v i j
+    MG.swap v i j
 
 -- | An in-place shuffle, using a global random number generator.
 --
@@ -73,5 +73,5 @@ mutShuffle g v = do
 -- +============+============+
 -- | In-place   | Yes        |
 -- +------------+------------+
-mutShuffleIO :: MG.MVector v a => v (PrimState IO) a -> IO ()
+mutShuffleIO :: (MG.MVector v a) => v (PrimState IO) a -> IO ()
 mutShuffleIO = mutShuffle globalStdGen

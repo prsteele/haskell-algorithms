@@ -22,11 +22,11 @@ where
 
 import Data.Ord (comparing)
 
-sort3 :: Ord a => a -> a -> a -> (a, a, a)
+sort3 :: (Ord a) => a -> a -> a -> (a, a, a)
 {-# INLINEABLE sort3 #-}
 sort3 = sort3By compare
 
-sort3On :: Ord b => (a -> b) -> a -> a -> a -> (a, a, a)
+sort3On :: (Ord b) => (a -> b) -> a -> a -> a -> (a, a, a)
 {-# INLINEABLE sort3On #-}
 sort3On f x y z =
   let tag a = let b = f a in b `seq` (b, a)

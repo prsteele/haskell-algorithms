@@ -1,5 +1,3 @@
-{-# LANGUAGE FlexibleContexts #-}
-
 -- | Sort a vector with merge sort. This sorting algorithm is __stable__.
 --
 -- The transformation performed by 'mergeSortOn' and 'mutMergeSortOn'
@@ -48,42 +46,35 @@ mergeSort = mergeSortBy compare
 mergeSortOn :: (G.Vector v a, G.Vector v (b, a), Ord b) => (a -> b) -> v a -> v a
 mergeSortOn = mkSortOn mergeSortBy
 
-mergeSortBy :: G.Vector v a => (a -> a -> Ordering) -> v a -> v a
-mergeSortBy cmp v = runST $ do
-  mv <- G.thaw v
-  mutMergeSortBy cmp mv
-  G.freeze mv
+mergeSortBy :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> v a
+mergeSortBy = mkSortBy mutMergeSortBy
 
 mutMergeSort :: (PrimMonad m, G.Vector v a, Ord a) => G.Mutable v (PrimState m) a -> m ()
 mutMergeSort = mutMergeSortBy compare
 
-mutMergeSortOn ::
-  (PrimMonad m, G.Vector v a, G.Vector v (b, a), Ord b) =>
-  (a -> b) ->
-  G.Mutable v (PrimState m) a ->
-  m ()
+mutMergeSortOn :: (PrimMonad m, G.Vector v a, G.Vector v (b, a), Ord b) => (a -> b) -> G.Mutable v (PrimState m) a -> m ()
 mutMergeSortOn = mkMutSortOn mutMergeSortBy
 
 mutMergeSortBy :: (PrimMonad m, G.Vector v a) => (a -> a -> Ordering) -> G.Mutable v (PrimState m) a -> m ()
 mutMergeSortBy cmp mv
   | MG.length mv <= 1 = pure ()
   | otherwise =
-    let n = MG.length mv
-        mid = n `div` 2
+      let n = MG.length mv
+          mid = n `div` 2
 
-        left = MG.slice 0 mid mv
-        right = MG.slice mid (n - mid) mv
-     in do
-          -- Recurse left
-          mutMergeSortBy cmp left
+          left = MG.slice 0 mid mv
+          right = MG.slice mid (n - mid) mv
+       in do
+            -- Recurse left
+            mutMergeSortBy cmp left
 
-          -- Recurse right
-          mutMergeSortBy cmp right
+            -- Recurse right
+            mutMergeSortBy cmp right
 
-          -- Merge
-          left' <- G.freeze left
-          right' <- G.freeze right
-          mutMerge cmp left' right' mv
+            -- Merge
+            left' <- G.freeze left
+            right' <- G.freeze right
+            mutMerge cmp left' right' mv
 
 -- | Merge two sorted vectors into a new sorted vector.
 merge :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> v a -> v a
@@ -117,10 +108,10 @@ mutMerge cmp left right output =
         | j == lenR = assignSlice (lenR + i) (G.slice i (lenL - i) left) output
         -- Both left and right have remaining elements
         | otherwise = do
-          let l = left G.! i
-              r = right G.! j
+            let l = left G.! i
+                r = right G.! j
 
-          if cmp l r /= GT
-            then MG.write output k l >> go (i + 1) j (k + 1)
-            else MG.write output k r >> go i (j + 1) (k + 1)
+            if cmp l r /= GT
+              then MG.write output k l >> go (i + 1) j (k + 1)
+              else MG.write output k r >> go i (j + 1) (k + 1)
    in go 0 0 0

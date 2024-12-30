@@ -43,7 +43,7 @@ import qualified Data.Vector.Generic.Mutable as MG
 insertionSort :: (G.Vector v a, Ord a) => v a -> v a
 insertionSort = insertionSortBy compare
 
-insertionSortBy :: G.Vector v a => (a -> a -> Ordering) -> v a -> v a
+insertionSortBy :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> v a
 insertionSortBy cmp v = runST $ do
   mv <- G.thaw v
   mutInsertionSortBy cmp mv
@@ -75,10 +75,10 @@ mutInsertionSortBy cmp v =
       shift key i
         | i < 0 = pure 0
         | otherwise = do
-          x <- MG.read v i
-          if cmp key x == LT
-            then MG.write v (i + 1) x >> shift key (i - 1)
-            else pure (i + 1)
+            x <- MG.read v i
+            if cmp key x == LT
+              then MG.write v (i + 1) x >> shift key (i - 1)
+              else pure (i + 1)
    in forM_ [1 .. n - 1] insert
 
 mutInsertionSortOn :: (PrimMonad m, G.Vector v a, G.Vector v (b, a), Ord b) => (a -> b) -> G.Mutable v (PrimState m) a -> m ()
