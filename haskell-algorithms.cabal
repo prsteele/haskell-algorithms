@@ -108,6 +108,7 @@ test-suite tests
   other-modules:      Algorithms.PermutationsSpec
                     , Algorithms.MaximumSubArraySpec
                     , Algorithms.ShortestPaths.DijkstraSpec
+                    , Algorithms.ShuffleSpec
                     , Algorithms.Sorting.CountingSortSpec
                     , Algorithms.Sorting.HeapSortSpec
                     , Algorithms.Sorting.InsertionSortSpec
