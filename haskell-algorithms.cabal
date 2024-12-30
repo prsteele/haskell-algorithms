@@ -57,17 +57,25 @@ library
                     , Algorithms.Sorting.Sort3
                     , Algorithms.Sorting.Utility
                     , Algorithms.Utility
+                    , Data.Heap
+                    , Data.Heap.Fixed
+                    , Data.Heap.Fixed.Intrusive
+                    , Data.Heap.Intrusive
+                    , Data.Heap.Generic
                     , Data.Vector.Growable
                     , Data.Vector.Growable.Generic
                     , Data.Vector.Growable.Primitive
                     , Data.Vector.Growable.Storable
                     , Data.Vector.Growable.Unboxed
   build-depends:      base >=4.16.4.0
+                    , containers
                     , mtl
                     , random
-                    , vector
                     , optics
                     , primitive
+                    , recursion-schemes
+                    , vector
+
 custom-setup
   setup-depends:
       base >=4.16.4.0
@@ -108,13 +116,15 @@ test-suite tests
                     , Algorithms.TestUtil
                     , Data.Vector.GrowableSpec
   build-depends:      base >=4.16.4.0
-                    , QuickCheck
+                    , containers
                     , haskell-algorithms
-                    , HUnit
                     , hspec
+                    , HUnit
                     , mtl
                     , optics
                     , primitive
+                    , QuickCheck
+                    , recursion-schemes
                     , vector
 
 benchmark bench
