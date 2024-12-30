@@ -46,7 +46,6 @@ library
   default-language:   Haskell2010
   exposed-modules:    Algorithms.MaximumSubArray
                     , Algorithms.Permutations
-                    , Algorithms.Sequence
                     , Algorithms.Shuffle
                     , Algorithms.Sorting
                     , Algorithms.Sorting.CountingSort
@@ -116,6 +115,7 @@ test-suite tests
                     , Algorithms.Sorting.Sort3Spec
                     , Algorithms.Sorting.TestUtil
                     , Algorithms.TestUtil
+                    , Algorithms.UtilitySpec
                     , Data.Heap.HeapSpec
                     , Data.Vector.GrowableSpec
   build-depends:      base >=4.16.4.0

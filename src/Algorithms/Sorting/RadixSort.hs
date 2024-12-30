@@ -29,8 +29,8 @@ module Algorithms.Sorting.RadixSort
   )
 where
 
-import Algorithms.Sequence
 import Algorithms.Sorting.MergeSort (mutMergeSortOn)
+import Algorithms.Utility
 import Control.Monad
 import Control.Monad.Primitive
 import Control.Monad.ST

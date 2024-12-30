@@ -14,7 +14,6 @@
 -- [here](https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle).
 module Algorithms.Shuffle where
 
-import Algorithms.Sequence
 import Algorithms.Utility
 import Control.Monad
 import Control.Monad.Primitive (PrimMonad (PrimState))
