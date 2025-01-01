@@ -29,8 +29,8 @@ module Algorithms.Sorting.RadixSort
   )
 where
 
-import Algorithms.Sequence
 import Algorithms.Sorting.MergeSort (mutMergeSortOn)
+import Algorithms.Utility
 import Control.Monad
 import Control.Monad.Primitive
 import Control.Monad.ST
@@ -40,7 +40,7 @@ import qualified Data.Vector.Generic.Mutable as MG
 
 -- | Sort a vector via radix sort.
 radixSort ::
-  G.Vector v a =>
+  (G.Vector v a) =>
   -- | The radix function
   (a -> Int -> b) ->
   -- | The in-place, stable sorting subroutine
@@ -73,7 +73,7 @@ mutTwosComplementRadixSort = mutRadixSort twosComplementRadix mutMergeSortOn (fi
 --
 -- We can almost use 'testBit' directly, but we need to negate the
 -- sign bit.
-twosComplementRadix :: FiniteBits a => a -> Int -> Bool
+twosComplementRadix :: (FiniteBits a) => a -> Int -> Bool
 twosComplementRadix x i
   | i == bits - 1 = not (testBit x i)
   | otherwise = testBit x i

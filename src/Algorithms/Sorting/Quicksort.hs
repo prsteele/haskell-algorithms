@@ -47,7 +47,6 @@ where
 
 import Algorithms.Sorting.Sort3
 import Algorithms.Sorting.Utility
-import Algorithms.Utility
 import Control.Monad
 import Control.Monad.Primitive
 import Control.Monad.ST
@@ -62,7 +61,7 @@ quicksort = quicksortWithPivot (pivotMedianOf3 compare) compare
 quicksortOn :: (G.Vector v a, G.Vector v (b, a), Ord b) => (a -> b) -> v a -> v a
 quicksortOn = mkSortOn quicksortBy
 
-quicksortBy :: G.Vector v a => (a -> a -> Ordering) -> v a -> v a
+quicksortBy :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> v a
 quicksortBy by = quicksortWithPivot (pivotMedianOf3 by) by
 
 quicksortWithPivot :: (G.Vector v a) => (forall s. PivotRule (ST s) v a) -> (a -> a -> Ordering) -> v a -> v a
@@ -99,7 +98,7 @@ mutQuicksortWithPivot pivotRule cmp v =
 -- 1. If @0 <= k && k < i@, then @v G.! k < pivot@
 -- 2. If @i <= k && k < j@, then @v G.! k == pivot@
 -- 3. If @j <= k@, then @v G.! k > pivot@
-partition :: G.Vector v a => (a -> a -> Ordering) -> a -> v a -> (Int, Int, v a)
+partition :: (G.Vector v a) => (a -> a -> Ordering) -> a -> v a -> (Int, Int, v a)
 partition cmp pivot v = runST $ do
   mv <- G.thaw v
   (i, j) <- mutPartition cmp pivot mv
@@ -119,11 +118,11 @@ mutPartition cmp pivot v =
       go i j k
         | k >= j = pure (i, j)
         | otherwise = do
-          x <- MG.read v k
-          case cmp x pivot of
-            LT -> swap v i k >> go (i + 1) j (k + 1)
-            EQ -> go i j (k + 1)
-            GT -> swap v (j - 1) k >> go i (j - 1) k
+            x <- MG.read v k
+            case cmp x pivot of
+              LT -> MG.swap v i k >> go (i + 1) j (k + 1)
+              EQ -> go i j (k + 1)
+              GT -> MG.swap v (j - 1) k >> go i (j - 1) k
    in do
         -- Partition elements, tracking where the pivots should end up
         go 0 n 0

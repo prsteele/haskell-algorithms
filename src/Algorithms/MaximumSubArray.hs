@@ -1,37 +1,31 @@
 {-# LANGUAGE ConstraintKinds #-}
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE TemplateHaskell #-}
 
 module Algorithms.MaximumSubArray where
 
 import Data.Function (on)
 import Data.Semigroup
 import qualified Data.Vector.Generic as G
-import Lens.Micro
-import Lens.Micro.TH
+import GHC.Generics
+import Optics
 
 -- | The half-closed indices defining the slice of a vector.
 data Slice = Slice
-  { _lo :: !Int,
-    _hi :: !Int
+  { lo :: !Int,
+    hi :: !Int
   }
-  deriving (Show)
-
-makeLenses ''Slice
+  deriving (Show, Generic)
 
 data SubArraySum a = SubArraySum
-  { _slice :: !Slice,
-    _value :: !a
+  { slice :: !Slice,
+    value :: !a
   }
-  deriving (Show)
+  deriving (Show, Generic)
 
-makeLenses ''SubArraySum
+instance (Eq a) => Eq (SubArraySum a) where
+  (==) = (==) `on` (^. #value)
 
-instance Eq a => Eq (SubArraySum a) where
-  (==) = (==) `on` (^. value)
-
-instance Ord a => Ord (SubArraySum a) where
-  compare = compare `on` (^. value)
+instance (Ord a) => Ord (SubArraySum a) where
+  compare = compare `on` (^. #value)
 
 -- | A convenience constraint describing orderable Monoids (like @Int@.)
 type Num' a = (Ord a, Monoid a)
@@ -48,7 +42,7 @@ maximumSubArray v = maximumSubArray' v (Slice 0 (G.length v))
 
 -- | A specialization of 'findMaximumSubArray' for numbers.
 maximumSubArrayNum :: (Num a, Ord a, G.Vector v a, G.Vector v (Sum a)) => v a -> SubArraySum a
-maximumSubArrayNum = (value %~ getSum) . maximumSubArray . G.map Sum
+maximumSubArrayNum = (#value %~ getSum) . maximumSubArray . G.map Sum
 
 maximumSubArray' :: (Num' a, G.Vector v a) => v a -> Slice -> SubArraySum a
 maximumSubArray' v ixs@(Slice l r)
@@ -59,11 +53,11 @@ maximumSubArray' v ixs@(Slice l r)
   -- Recursive case; there are at least two elements in the range, so
   -- the left, right, and crossing cases are all nonempty as well.
   | otherwise =
-    let mid = (l + r) `div` 2
-        left = maximumSubArray' v (ixs & hi .~ mid)
-        right = maximumSubArray' v (ixs & lo .~ mid)
-        crossing = findMaxCrossingSubArray v l mid r
-     in maximum [left, crossing, right]
+      let mid = (l + r) `div` 2
+          left = maximumSubArray' v (ixs & #hi .~ mid)
+          right = maximumSubArray' v (ixs & #lo .~ mid)
+          crossing = findMaxCrossingSubArray v l mid r
+       in maximum [left, crossing, right]
 
 -- | Find the maximum subarray crossing the given index.
 --

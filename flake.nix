@@ -19,6 +19,22 @@
           in
           {
             default = pkgs.haskellPackages.haskell-algorithms;
+
+            format = pkgs.writeShellApplication {
+              name = "format";
+              runtimeInputs = [ pkgs.git pkgs.ormolu pkgs.findutils ];
+              text = ''
+                git ls-files -z '*.hs' | xargs -0 -I{} ormolu --mode inplace {}
+              '';
+            };
+
+            check-formatting = pkgs.writeShellApplication {
+              name = "format";
+              runtimeInputs = [ pkgs.git pkgs.ormolu pkgs.findutils ];
+              text = ''
+                git ls-files -z '*.hs' | xargs -0 -I{} ormolu --mode check {}
+              '';
+            };
           }
         );
 
@@ -28,7 +44,11 @@
         in
         {
           default = pkgs.haskellPackages.shellFor {
-            packages = hpkgs: [ hpkgs.haskell-algorithms ];
+            packages =
+              let
+                enableBench = pkgs.haskell.lib.compose.overrideCabal (drv: { doBenchmark = true; });
+              in
+              hpkgs: [ (enableBench hpkgs.haskell-algorithms) ];
 
             buildInputs = [
               pkgs.haskellPackages.haskell-language-server
@@ -37,6 +57,7 @@
             ];
 
             withHoogle = true;
+            doBenchmark = true;
           };
         }
       );

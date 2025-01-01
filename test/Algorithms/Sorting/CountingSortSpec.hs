@@ -30,7 +30,7 @@ countingSortAdapter v =
         Left x -> error ("countingSort encountered an invalid valud " <> show x)
         Right result -> result
 
-bounds :: Ord a => [a] -> (a, a)
+bounds :: (Ord a) => [a] -> (a, a)
 bounds (x : xs) = foldl' f (x, x) xs
   where
     f (lo, hi) z = (min lo z, max hi z)

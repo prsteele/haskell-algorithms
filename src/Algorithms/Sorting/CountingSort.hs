@@ -1,6 +1,6 @@
 module Algorithms.Sorting.CountingSort where
 
-import Algorithms.Sequence
+import Algorithms.Utility
 import Control.Monad
 import Control.Monad.Except
 import Control.Monad.Primitive

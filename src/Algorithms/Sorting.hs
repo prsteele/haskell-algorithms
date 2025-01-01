@@ -1,5 +1,5 @@
 module Algorithms.Sorting
-  ( -- * General-purpose
+  ( -- * General-purpose sorts
 
     -- | These sorting algorithms are suitable for most use cases.
 
@@ -19,7 +19,15 @@ module Algorithms.Sorting
     mutMergeSortBy,
     mutMergeSortOn,
 
-    -- * For small lists
+    -- ** Heap sort
+    heapsort,
+    heapsortBy,
+    heapsortOn,
+    mutHeapsort,
+    mutHeapsortBy,
+    mutHeapsortOn,
+
+    -- * Sorts for small lists
 
     -- | These sorting algorithms have poor worst-case complexity, and
     -- so are useful on small lists (or possibly nearly-sorted lists.)
@@ -49,6 +57,7 @@ module Algorithms.Sorting
 where
 
 import Algorithms.Sorting.CountingSort
+import Algorithms.Sorting.HeapSort
 import Algorithms.Sorting.InsertionSort
 import Algorithms.Sorting.MergeSort
 import Algorithms.Sorting.Quicksort
