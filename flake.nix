@@ -44,7 +44,11 @@
         in
         {
           default = pkgs.haskellPackages.shellFor {
-            packages = hpkgs: [ hpkgs.haskell-algorithms ];
+            packages =
+              let
+                enableBench = pkgs.haskell.lib.compose.overrideCabal (drv: { doBenchmark = true; });
+              in
+              hpkgs: [ (enableBench hpkgs.haskell-algorithms) ];
 
             buildInputs = [
               pkgs.haskellPackages.haskell-language-server
@@ -53,6 +57,7 @@
             ];
 
             withHoogle = true;
+            doBenchmark = true;
           };
         }
       );
