@@ -58,6 +58,8 @@ library
                     , Algorithms.Sorting.Sort3
                     , Algorithms.Sorting.Utility
                     , Algorithms.Utility
+                    , Data.HashTable.Generic
+                    , Data.HashTable.Open
                     , Data.Heap
                     , Data.Heap.Fixed
                     , Data.Heap.Fixed.Intrusive
@@ -70,6 +72,7 @@ library
                     , Data.Vector.Growable.Unboxed
   build-depends:      base >=4.16.4.0
                     , containers
+                    , hashable
                     , mtl
                     , random
                     , optics
@@ -119,10 +122,12 @@ test-suite tests
                     , Algorithms.Sorting.TestUtil
                     , Algorithms.TestUtil
                     , Algorithms.UtilitySpec
+                    , Data.HashTable.OpenSpec
                     , Data.Heap.HeapSpec
                     , Data.Vector.GrowableSpec
   build-depends:      base >=4.16.4.0
                     , containers
+                    , hashable
                     , haskell-algorithms
                     , hspec
                     , HUnit
