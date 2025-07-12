@@ -358,11 +358,14 @@ genericHeapPop h = do
 genericHeapSize :: (FixedHeapable f a) => f s a -> ST s Int
 genericHeapSize = basicHeapLength
 
+{-# INLINE left #-}
 left :: Int -> Int
 left i = 2 * i + 1
 
+{-# INLINE right #-}
 right :: Int -> Int
 right = succ . left
 
+{-# INLINE parent #-}
 parent :: Int -> Int
 parent i = (i - 1) `div` 2
