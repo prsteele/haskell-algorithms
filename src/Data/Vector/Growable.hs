@@ -32,6 +32,30 @@ module Data.Vector.Growable
     withMVector,
     unsafeWithMVector,
 
+    -- ** Maps
+    Data.Vector.Growable.mapM_,
+    imapM_,
+    Data.Vector.Growable.forM_,
+    iforM_,
+
+    -- ** Folds
+    foldM',
+    Data.Vector.Growable.foldM,
+    foldl',
+    Data.Vector.Growable.foldl,
+    foldr',
+    Data.Vector.Growable.foldr,
+    foldrM',
+    foldrM,
+    ifoldM',
+    ifoldM,
+    ifoldl',
+    ifoldl,
+    ifoldr',
+    ifoldr,
+    ifoldrM',
+    ifoldrM,
+
     -- * Helper functions
     GrowVectorState (..),
     genericGrowVectorEmpty,
@@ -54,7 +78,7 @@ import qualified Data.Vector as V
 import qualified Data.Vector.Generic.Mutable as MG
 import qualified Data.Vector.Growable.Generic as GG
 import qualified Data.Vector.Mutable as MV
-import Prelude hiding (length, read)
+import Prelude hiding (length, mapM_, read)
 
 -- | An 'MVector' that can grow (and shrink).
 newtype GrowMVector s a = GrowMVector
@@ -167,6 +191,66 @@ write = GG.write
 swap :: (PrimMonad m) => GrowMVector (PrimState m) a -> Int -> Int -> m ()
 swap = GG.swap
 
+mapM_ :: (PrimMonad m) => (a -> m b) -> GrowMVector (PrimState m) a -> m ()
+mapM_ = GG.mapM_
+
+imapM_ :: (PrimMonad m) => (Int -> a -> m b) -> GrowMVector (PrimState m) a -> m ()
+imapM_ = GG.imapM_
+
+forM_ :: (PrimMonad m) => GrowMVector (PrimState m) a -> (a -> m b) -> m ()
+forM_ = GG.forM_
+
+iforM_ :: (PrimMonad m) => GrowMVector (PrimState m) a -> (Int -> a -> m b) -> m ()
+iforM_ = GG.iforM_
+
+foldl :: (PrimMonad m) => (b -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldl = GG.foldl
+
+foldl' :: (PrimMonad m) => (b -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldl' = GG.foldl'
+
+ifoldl :: (PrimMonad m) => (b -> Int -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldl = GG.ifoldl
+
+ifoldl' :: (PrimMonad m) => (b -> Int -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldl' = GG.ifoldl'
+
+foldM :: (PrimMonad m) => (b -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldM = GG.foldM
+
+foldM' :: (PrimMonad m) => (b -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldM' = GG.foldM'
+
+ifoldM :: (PrimMonad m) => (b -> Int -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldM = GG.ifoldM
+
+ifoldM' :: (PrimMonad m) => (b -> Int -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldM' = GG.ifoldM'
+
+foldr :: (PrimMonad m) => (a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldr = GG.foldr
+
+foldr' :: (PrimMonad m) => (a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldr' = GG.foldr'
+
+ifoldr :: (PrimMonad m) => (Int -> a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldr = GG.ifoldr
+
+ifoldr' :: (PrimMonad m) => (Int -> a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldr' = GG.ifoldr'
+
+foldrM :: (PrimMonad m) => (a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldrM = GG.foldrM
+
+foldrM' :: (PrimMonad m) => (a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldrM' = GG.foldrM'
+
+ifoldrM :: (PrimMonad m) => (Int -> a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldrM = GG.ifoldrM
+
+ifoldrM' :: (PrimMonad m) => (Int -> a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldrM' = GG.ifoldrM'
+
 type GenericConstructor gv s a = STRef s (GrowVectorState (GG.MVector gv) s a) -> gv s a
 
 type GenericRef gv s a = gv s a -> STRef s (GrowVectorState (GG.MVector gv) s a)
@@ -209,7 +293,7 @@ genericGrowVectorConserve getRef gv =
         (GrowVectorState v size capacity') <- readSTRef ref
         when (size < capacity') $ do
           v' <- MG.unsafeNew size
-          forM_ [0 .. size - 1] $ \i -> MG.read v i >>= MG.write v' i
+          Control.Monad.forM_ [0 .. size - 1] $ \i -> MG.read v i >>= MG.write v' i
           writeSTRef ref (GrowVectorState v' size size)
 
 genericGrowVectorShrink :: (GG.GrowVector gv a) => GenericRef gv s a -> gv s a -> Int -> ST s ()

@@ -30,6 +30,30 @@ module Data.Vector.Growable.Unboxed
     -- *** Access the underlying 'MVector'
     withMVector,
     unsafeWithMVector,
+
+    -- ** Maps
+    Data.Vector.Growable.Unboxed.mapM_,
+    imapM_,
+    Data.Vector.Growable.Unboxed.forM_,
+    iforM_,
+
+    -- ** Folds
+    foldM',
+    Data.Vector.Growable.Unboxed.foldM,
+    foldl',
+    Data.Vector.Growable.Unboxed.foldl,
+    foldr',
+    Data.Vector.Growable.Unboxed.foldr,
+    foldrM',
+    foldrM,
+    ifoldM',
+    ifoldM,
+    ifoldl',
+    ifoldl,
+    ifoldr',
+    ifoldr,
+    ifoldrM',
+    ifoldrM,
   )
 where
 
@@ -146,3 +170,63 @@ write = GG.write
 
 swap :: (PrimMonad m, MU.Unbox a) => GrowMVector (PrimState m) a -> Int -> Int -> m ()
 swap = GG.swap
+
+mapM_ :: (PrimMonad m, MU.Unbox a) => (a -> m b) -> GrowMVector (PrimState m) a -> m ()
+mapM_ = GG.mapM_
+
+imapM_ :: (PrimMonad m, MU.Unbox a) => (Int -> a -> m b) -> GrowMVector (PrimState m) a -> m ()
+imapM_ = GG.imapM_
+
+forM_ :: (PrimMonad m, MU.Unbox a) => GrowMVector (PrimState m) a -> (a -> m b) -> m ()
+forM_ = GG.forM_
+
+iforM_ :: (PrimMonad m, MU.Unbox a) => GrowMVector (PrimState m) a -> (Int -> a -> m b) -> m ()
+iforM_ = GG.iforM_
+
+foldl :: (PrimMonad m, MU.Unbox a) => (b -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldl = GG.foldl
+
+foldl' :: (PrimMonad m, MU.Unbox a) => (b -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldl' = GG.foldl'
+
+ifoldl :: (PrimMonad m, MU.Unbox a) => (b -> Int -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldl = GG.ifoldl
+
+ifoldl' :: (PrimMonad m, MU.Unbox a) => (b -> Int -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldl' = GG.ifoldl'
+
+foldM :: (PrimMonad m, MU.Unbox a) => (b -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldM = GG.foldM
+
+foldM' :: (PrimMonad m, MU.Unbox a) => (b -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldM' = GG.foldM'
+
+ifoldM :: (PrimMonad m, MU.Unbox a) => (b -> Int -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldM = GG.ifoldM
+
+ifoldM' :: (PrimMonad m, MU.Unbox a) => (b -> Int -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldM' = GG.ifoldM'
+
+foldr :: (PrimMonad m, MU.Unbox a) => (a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldr = GG.foldr
+
+foldr' :: (PrimMonad m, MU.Unbox a) => (a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldr' = GG.foldr'
+
+ifoldr :: (PrimMonad m, MU.Unbox a) => (Int -> a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldr = GG.ifoldr
+
+ifoldr' :: (PrimMonad m, MU.Unbox a) => (Int -> a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldr' = GG.ifoldr'
+
+foldrM :: (PrimMonad m, MU.Unbox a) => (a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldrM = GG.foldrM
+
+foldrM' :: (PrimMonad m, MU.Unbox a) => (a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldrM' = GG.foldrM'
+
+ifoldrM :: (PrimMonad m, MU.Unbox a) => (Int -> a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldrM = GG.ifoldrM
+
+ifoldrM' :: (PrimMonad m, MU.Unbox a) => (Int -> a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldrM' = GG.ifoldrM'

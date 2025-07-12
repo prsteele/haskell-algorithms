@@ -30,6 +30,30 @@ module Data.Vector.Growable.Primitive
     -- *** Access the underlying 'MVector'
     withMVector,
     unsafeWithMVector,
+
+    -- ** Maps
+    Data.Vector.Growable.Primitive.mapM_,
+    imapM_,
+    Data.Vector.Growable.Primitive.forM_,
+    iforM_,
+
+    -- ** Folds
+    foldM',
+    Data.Vector.Growable.Primitive.foldM,
+    foldl',
+    Data.Vector.Growable.Primitive.foldl,
+    foldr',
+    Data.Vector.Growable.Primitive.foldr,
+    foldrM',
+    foldrM,
+    ifoldM',
+    ifoldM,
+    ifoldl',
+    ifoldl,
+    ifoldr',
+    ifoldr,
+    ifoldrM',
+    ifoldrM,
   )
 where
 
@@ -147,3 +171,63 @@ write = GG.write
 
 swap :: (PrimMonad m, Prim a) => GrowMVector (PrimState m) a -> Int -> Int -> m ()
 swap = GG.swap
+
+mapM_ :: (PrimMonad m, Prim a) => (a -> m b) -> GrowMVector (PrimState m) a -> m ()
+mapM_ = GG.mapM_
+
+imapM_ :: (PrimMonad m, Prim a) => (Int -> a -> m b) -> GrowMVector (PrimState m) a -> m ()
+imapM_ = GG.imapM_
+
+forM_ :: (PrimMonad m, Prim a) => GrowMVector (PrimState m) a -> (a -> m b) -> m ()
+forM_ = GG.forM_
+
+iforM_ :: (PrimMonad m, Prim a) => GrowMVector (PrimState m) a -> (Int -> a -> m b) -> m ()
+iforM_ = GG.iforM_
+
+foldl :: (PrimMonad m, Prim a) => (b -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldl = GG.foldl
+
+foldl' :: (PrimMonad m, Prim a) => (b -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldl' = GG.foldl'
+
+ifoldl :: (PrimMonad m, Prim a) => (b -> Int -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldl = GG.ifoldl
+
+ifoldl' :: (PrimMonad m, Prim a) => (b -> Int -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldl' = GG.ifoldl'
+
+foldM :: (PrimMonad m, Prim a) => (b -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldM = GG.foldM
+
+foldM' :: (PrimMonad m, Prim a) => (b -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldM' = GG.foldM'
+
+ifoldM :: (PrimMonad m, Prim a) => (b -> Int -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldM = GG.ifoldM
+
+ifoldM' :: (PrimMonad m, Prim a) => (b -> Int -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldM' = GG.ifoldM'
+
+foldr :: (PrimMonad m, Prim a) => (a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldr = GG.foldr
+
+foldr' :: (PrimMonad m, Prim a) => (a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+foldr' = GG.foldr'
+
+ifoldr :: (PrimMonad m, Prim a) => (Int -> a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldr = GG.ifoldr
+
+ifoldr' :: (PrimMonad m, Prim a) => (Int -> a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldr' = GG.ifoldr'
+
+foldrM :: (PrimMonad m, Prim a) => (a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldrM = GG.foldrM
+
+foldrM' :: (PrimMonad m, Prim a) => (a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+foldrM' = GG.foldrM'
+
+ifoldrM :: (PrimMonad m, Prim a) => (Int -> a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldrM = GG.ifoldrM
+
+ifoldrM' :: (PrimMonad m, Prim a) => (Int -> a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
+ifoldrM' = GG.ifoldrM'
