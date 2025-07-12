@@ -115,6 +115,7 @@ instance (Ord a, GG.GrowVector gv a) => HG.Heap (Heap gv) a where
 instance (Ord a, GG.GrowVector gv a) => HG.IntrusiveHeap (Heap gv) a where
   basicHeapPush' h x = HG.genericHandleToCallback h <$> HG.genericHeapPush' h x
 
+{-# INLINE heap #-}
 heap :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => (a -> a -> Ordering) -> gv s a -> m (Heap gv s a)
 heap cmp gv = stToPrim $ do
   refs <- GG.withMVector gv $ \mv -> MG.generateM (MG.length mv) (newSTRef . Just)
@@ -123,47 +124,62 @@ heap cmp gv = stToPrim $ do
   build h
   pure h
 
+{-# INLINE fromHeap #-}
 fromHeap :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m (gv s a)
 fromHeap (Heap (_, gv, _)) = pure gv
 
+{-# INLINE build #-}
 build :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m ()
 build = HG.build
 
+{-# INLINE heapify #-}
 heapify :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> Int -> m ()
 heapify = HG.heapify
 
+{-# INLINE peek #-}
 peek :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m (Maybe a)
 peek = HG.peek
 
+{-# INLINE popPush #-}
 popPush :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> a -> m (Maybe a)
 popPush = HG.popPush
 
+{-# INLINE pushPop #-}
 pushPop :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> a -> m a
 pushPop = HG.pushPop
 
+{-# INLINE reprioritize #-}
 reprioritize :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> Int -> a -> m ()
 reprioritize = HG.reprioritize
 
+{-# INLINE size #-}
 size :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m Int
 size = HG.size
 
+{-# INLINE push #-}
 push :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> a -> m ()
 push = HG.push
 
+{-# INLINE pop #-}
 pop :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m (Maybe a)
 pop = HG.pop
 
+{-# INLINE peek' #-}
 peek' :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m (Maybe (a, HG.Reprioritize m a))
 peek' = HG.peek'
 
+{-# INLINE popPush' #-}
 popPush' :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> a -> m (Maybe (a, HG.Reprioritize m a))
 popPush' = HG.popPush'
 
+{-# INLINE pushPop' #-}
 pushPop' :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> a -> m (HG.Reprioritize m a, a)
 pushPop' = HG.pushPop'
 
+{-# INLINE clear #-}
 clear :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m ()
 clear = HG.clear
 
+{-# INLINE push' #-}
 push' :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> a -> m (HG.Reprioritize m a)
 push' = HG.push'

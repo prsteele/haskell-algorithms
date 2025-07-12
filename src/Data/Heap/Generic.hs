@@ -142,15 +142,19 @@ genericHandleToCallback h ref x = do
     Nothing -> pure ()
     Just (ix, _) -> basicHeapWrite h ix x ref
 
+{-# INLINE build #-}
 build :: (PrimMonad m, FixedHeap f a, s ~ PrimState m) => f s a -> m ()
 build = stToPrim . basicHeapBuild
 
+{-# INLINE heapify #-}
 heapify :: (PrimMonad m, FixedHeap f a, s ~ PrimState m) => f s a -> Int -> m ()
 heapify h = stToPrim . basicHeapify h
 
+{-# INLINE peek #-}
 peek :: (PrimMonad m, FixedHeap f a, s ~ PrimState m) => f s a -> m (Maybe a)
 peek = stToPrim . basicHeapPeek
 
+{-# INLINE peek' #-}
 peek' :: (PrimMonad m, IntrusiveFixedHeap f a, s ~ PrimState m) => f s a -> m (Maybe (a, Reprioritize m a))
 peek' h = stToPrim $ do
   mx <- basicHeapPeek' h
@@ -158,9 +162,11 @@ peek' h = stToPrim $ do
     Nothing -> pure Nothing
     Just (x, cb) -> pure (Just (x, stToPrim . cb))
 
+{-# INLINE popPush #-}
 popPush :: (PrimMonad m, FixedHeap f a, s ~ PrimState m) => f s a -> a -> m (Maybe a)
 popPush h = stToPrim . basicHeapPopPush h
 
+{-# INLINE popPush' #-}
 popPush' :: (PrimMonad m, IntrusiveFixedHeap f a, s ~ PrimState m) => f s a -> a -> m (Maybe (a, Reprioritize m a))
 popPush' h x = stToPrim $ do
   mPopped <- basicHeapPopPush' h x
@@ -168,34 +174,43 @@ popPush' h x = stToPrim $ do
     Nothing -> pure Nothing
     Just (y, cb) -> pure (Just (y, stToPrim . cb))
 
+{-# INLINE pushPop #-}
 pushPop :: (PrimMonad m, FixedHeap f a, s ~ PrimState m) => f s a -> a -> m a
 pushPop h = stToPrim . basicHeapPushPop h
 
+{-# INLINE pushPop' #-}
 pushPop' :: (PrimMonad m, IntrusiveFixedHeap f a, s ~ PrimState m) => f s a -> a -> m (Reprioritize m a, a)
 pushPop' h x = stToPrim $ do
   (cb, y) <- basicHeapPushPop' h x
   pure (stToPrim . cb, y)
 
+{-# INLINE reprioritize #-}
 reprioritize :: (PrimMonad m, FixedHeap f a, s ~ PrimState m) => f s a -> Int -> a -> m ()
 reprioritize h i = stToPrim . basicHeapReprioritize h i
 
+{-# INLINE clear #-}
 clear :: (PrimMonad m, Heap f a, s ~ PrimState m) => f s a -> m ()
 clear = stToPrim . basicClear
 
+{-# INLINE push #-}
 push :: (PrimMonad m, Heap f a, s ~ PrimState m) => f s a -> a -> m ()
 push h = stToPrim . basicHeapPush h
 
+{-# INLINE pop #-}
 pop :: (PrimMonad m, Heap f a, s ~ PrimState m) => f s a -> m (Maybe a)
 pop = stToPrim . basicHeapPop
 
+{-# INLINE push' #-}
 push' :: (PrimMonad m, IntrusiveHeap f a, s ~ PrimState m) => f s a -> a -> m (Reprioritize m a)
 push' h x = stToPrim $ do
   cb <- basicHeapPush' h x
   pure $ stToPrim . cb
 
+{-# INLINE size #-}
 size :: (PrimMonad m, FixedHeap f a, s ~ PrimState m) => f s a -> m Int
 size = stToPrim . basicHeapSize
 
+{-# INLINE swap #-}
 swap :: (FixedHeapable f a) => f s a -> Int -> Int -> ST s ()
 swap h i j = do
   xi <- basicHeapRead h i
@@ -203,6 +218,7 @@ swap h i j = do
   uncurry (basicHeapWrite h i) xj
   uncurry (basicHeapWrite h j) xi
 
+{-# INLINE genericHeapify #-}
 genericHeapify :: (FixedHeapable f a) => f s a -> Int -> ST s ()
 genericHeapify h initIx =
   let go len i = do
@@ -223,12 +239,15 @@ genericHeapify h initIx =
         len <- basicHeapLength h
         go len initIx
 
+{-# INLINE genericPeek #-}
 genericPeek :: (FixedHeapable f a) => f s a -> ST s (Maybe a)
 genericPeek h = fmap fst <$> basicHeapReadMaybe h 0
 
+{-# INLINE genericPeek' #-}
 genericPeek' :: (FixedHeapable f a) => f s a -> ST s (Maybe (a, Handle f s))
 genericPeek' h = basicHeapReadMaybe h 0
 
+{-# INLINE genericBuild #-}
 genericBuild :: (FixedHeapable f a) => f s a -> ST s ()
 genericBuild h = do
   len <- basicHeapLength h
@@ -236,9 +255,11 @@ genericBuild h = do
   when (len > 0) $
     forM_ ixs (genericHeapify h)
 
+{-# INLINE genericHeapPopPush #-}
 genericHeapPopPush :: (FixedHeapable f a) => f s a -> a -> ST s (Maybe a)
 genericHeapPopPush h x = fmap fst <$> genericHeapPopPush' h x
 
+{-# INLINE genericHeapPopPush' #-}
 genericHeapPopPush' :: (FixedHeapable f a) => f s a -> a -> ST s (Maybe (a, Handle f s))
 genericHeapPopPush' h x = do
   my <- genericPeek' h
@@ -260,9 +281,11 @@ genericHeapPopPush' h x = do
       -- Return the popped element.
       pure (Just (y, xref))
 
+{-# INLINE genericHeapPushPop #-}
 genericHeapPushPop :: (FixedHeapable f a) => f s a -> a -> ST s a
 genericHeapPushPop h x = snd <$> genericHeapPushPop' h x
 
+{-# INLINE genericHeapPushPop' #-}
 genericHeapPushPop' :: (FixedHeapable f a) => f s a -> a -> ST s (Handle f s, a)
 genericHeapPushPop' h x = do
   my <- genericPeek' h
@@ -290,6 +313,7 @@ genericHeapPushPop' h x = do
           -- Return the popped element.
           pure (xref, y)
 
+{-# INLINE genericHeapReprioritize #-}
 genericHeapReprioritize :: (FixedHeapable f a) => f s a -> Int -> a -> ST s ()
 genericHeapReprioritize h initIx x =
   let handleIncrease ix
@@ -308,6 +332,7 @@ genericHeapReprioritize h initIx x =
           then genericBuild h -- Recover the heap invariant by brute force
           else handleIncrease initIx -- Recover the heap invariant
 
+{-# INLINE genericHeapReprioritize' #-}
 genericHeapReprioritize' :: (FixedHeapable f a) => f s a -> Handle f s -> a -> ST s ()
 genericHeapReprioritize' h ref x = do
   mIx <- basicHeapReadHandle h ref
@@ -315,12 +340,15 @@ genericHeapReprioritize' h ref x = do
     Nothing -> pure ()
     Just (ix, _) -> genericHeapReprioritize h ix x
 
+{-# INLINE genericHeapPriority' #-}
 genericHeapPriority' :: (FixedHeapable f a) => f s a -> Handle f s -> ST s (Maybe a)
 genericHeapPriority' h ref = fmap snd <$> basicHeapReadHandle h ref
 
+{-# INLINE genericHeapPush #-}
 genericHeapPush :: (Heapable f a) => f s a -> a -> ST s ()
 genericHeapPush h x = void (genericHeapPush' h x)
 
+{-# INLINE genericHeapPush' #-}
 genericHeapPush' :: (Heapable f a) => f s a -> a -> ST s (Handle f s)
 genericHeapPush' h x = do
   -- Push the element to the end of the heap
@@ -333,6 +361,7 @@ genericHeapPush' h x = do
   genericHeapReprioritize h len x
   pure ref
 
+{-# INLINE genericHeapPop #-}
 genericHeapPop :: (Heapable f a) => f s a -> ST s (Maybe a)
 genericHeapPop h = do
   mx <- genericPeek' h
@@ -355,6 +384,7 @@ genericHeapPop h = do
 
       pure (Just x)
 
+{-# INLINE genericHeapSize #-}
 genericHeapSize :: (FixedHeapable f a) => f s a -> ST s Int
 genericHeapSize = basicHeapLength
 

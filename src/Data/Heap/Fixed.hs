@@ -49,32 +49,41 @@ instance (MG.MVector mv a) => HG.FixedHeap (Heap mv) a where
   basicHeapReprioritize = HG.genericHeapReprioritize
   basicHeapSize = HG.genericHeapSize
 
+{-# INLINE heap #-}
 heap :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => (a -> a -> Ordering) -> mv s a -> m (Heap mv s a)
 heap cmp mv = do
   let h = Heap (cmp, mv)
   build h
   pure h
 
+{-# INLINE fromHeap #-}
 fromHeap :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> m (mv s a)
 fromHeap (Heap (_, mv)) = pure mv
 
+{-# INLINE build #-}
 build :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> m ()
 build = HG.build
 
+{-# INLINE heapify #-}
 heapify :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> Int -> m ()
 heapify = HG.heapify
 
+{-# INLINE peek #-}
 peek :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> m (Maybe a)
 peek = HG.peek
 
+{-# INLINE popPush #-}
 popPush :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> a -> m (Maybe a)
 popPush = HG.popPush
 
+{-# INLINE pushPop #-}
 pushPop :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> a -> m a
 pushPop = HG.pushPop
 
+{-# INLINE reprioritize #-}
 reprioritize :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> Int -> a -> m ()
 reprioritize = HG.reprioritize
 
+{-# INLINE size #-}
 size :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> m Int
 size = HG.size

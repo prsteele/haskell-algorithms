@@ -152,35 +152,45 @@ stLength (HashTable _ _ sRef _) = readSTRef sRef
 new :: (PrimMonad m, Eq k) => Hash k -> Probe k -> Int -> m (HashTable (PrimState m) k v)
 new h p s = stToPrim (stNew h p s)
 
+{-# INLINE lookup #-}
 lookup :: (PrimMonad m, Eq k) => HashTable (PrimState m) k v -> k -> m (Maybe v)
 lookup = G.lookup
 
+{-# INLINE insert #-}
 insert :: (PrimMonad m, Eq k) => HashTable (PrimState m) k v -> k -> v -> m ()
 insert = G.insert
 
+{-# INLINE delete #-}
 delete :: (PrimMonad m, Eq k) => HashTable (PrimState m) k v -> k -> m ()
 delete = G.delete
 
+{-# INLINE values #-}
 values :: (PrimMonad m, Eq k) => HashTable (PrimState m) k v -> m [v]
 values = G.values
 
+{-# INLINE keys #-}
 keys :: (PrimMonad m, Eq k) => HashTable (PrimState m) k v -> m [k]
 keys = G.keys
 
 toList :: (PrimMonad m, Eq k) => HashTable (PrimState m) k v -> m [(k, v)]
 toList = G.toList
 
+{-# INLINE length #-}
 length :: (PrimMonad m, Eq k) => HashTable (PrimState m) k v -> m Int
 length = G.length
 
+{-# INLINE mapM_ #-}
 mapM_ :: (PrimMonad m, Eq k) => (v -> m ()) -> HashTable (PrimState m) k v -> m ()
 mapM_ = G.mapM_
 
+{-# INLINE kmapM_ #-}
 kmapM_ :: (PrimMonad m, Eq k) => (k -> v -> m ()) -> HashTable (PrimState m) k v -> m ()
 kmapM_ = G.kmapM_
 
+{-# INLINE forM_ #-}
 forM_ :: (PrimMonad m, Eq k) => HashTable (PrimState m) k v -> (v -> m ()) -> m ()
 forM_ = G.forM_
 
+{-# INLINE kforM_ #-}
 kforM_ :: (PrimMonad m, Eq k) => HashTable (PrimState m) k v -> (k -> v -> m ()) -> m ()
 kforM_ = G.kforM_

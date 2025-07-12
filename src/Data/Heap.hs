@@ -65,40 +65,52 @@ instance (Ord a, GG.GrowVector gv a) => HG.Heap (Heap gv) a where
   basicHeapPop = HG.genericHeapPop
   basicHeapPush = HG.genericHeapPush
 
+{-# INLINE clear #-}
 clear :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m ()
 clear = HG.clear
 
+{-# INLINE heap #-}
 heap :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => (a -> a -> Ordering) -> gv s a -> m (Heap gv s a)
 heap cmp gv =
   let h = Heap (cmp, gv)
    in stToPrim (HG.genericBuild h) >> pure h
 
+{-# INLINE fromHeap #-}
 fromHeap :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m (gv s a)
 fromHeap (Heap (_, gv)) = pure gv
 
+{-# INLINE build #-}
 build :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m ()
 build = HG.build
 
+{-# INLINE heapify #-}
 heapify :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> Int -> m ()
 heapify = HG.heapify
 
+{-# INLINE peek #-}
 peek :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m (Maybe a)
 peek = HG.peek
 
+{-# INLINE popPush #-}
 popPush :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> a -> m (Maybe a)
 popPush = HG.popPush
 
+{-# INLINE pushPop #-}
 pushPop :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> a -> m a
 pushPop = HG.pushPop
 
+{-# INLINE reprioritize #-}
 reprioritize :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> Int -> a -> m ()
 reprioritize = HG.reprioritize
 
+{-# INLINE size #-}
 size :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m Int
 size = HG.size
 
+{-# INLINE push #-}
 push :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> a -> m ()
 push = HG.push
 
+{-# INLINE pop #-}
 pop :: (Ord a, PrimMonad m, GG.GrowVector gv a, s ~ PrimState m) => Heap gv s a -> m (Maybe a)
 pop = HG.pop

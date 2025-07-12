@@ -123,16 +123,19 @@ class (MG.MVector (MVector v) a) => GrowVector v a where
   basicReadMaybe gv i = withMVector gv (`MG.readMaybe` i)
 
 -- | Create an empty growable vector with the given initial capacity.
+{-# INLINE empty #-}
 empty :: (PrimMonad m, GrowVector v a) => Int -> m (v (PrimState m) a)
 empty = stToPrim . basicEmpty
 
 -- | Create an immutable copy of the grow vector.
+{-# INLINE freeze #-}
 freeze :: (PrimMonad m, s ~ PrimState m, G.Vector v a, MVector gv ~ G.Mutable v, GrowVector gv a) => gv s a -> m (v a)
 freeze = stToPrim . flip withMVector G.freeze
 
 -- | Create a growable copy of the vector.
 --
 -- Assumed complexity \(O(n)\).
+{-# INLINE thaw #-}
 thaw :: (PrimMonad m, s ~ PrimState m, G.Vector v a, MVector gv ~ G.Mutable v, GrowVector gv a) => v a -> m (gv s a)
 thaw = stToPrim . (G.thaw >=> basicFromMVector)
 
@@ -142,12 +145,14 @@ thaw = stToPrim . (G.thaw >=> basicFromMVector)
 -- this; see `fromVector` for a safer alternative.
 --
 -- Assumed complexity \(O(1)\).
+{-# INLINE fromMVector #-}
 fromMVector :: (PrimMonad m, GrowVector v a) => MVector v (PrimState m) a -> m (v (PrimState m) a)
 fromMVector = stToPrim . basicFromMVector
 
 -- | Create a new growable vector from an existing vector.
 --
 -- This is an alias of 'thaw'.
+{-# INLINE fromVector #-}
 fromVector ::
   (MVector gv ~ G.Mutable v, PrimMonad m, G.Vector v a, GrowVector gv a) =>
   v a ->
@@ -157,21 +162,25 @@ fromVector = thaw
 -- | Append an element to the vector, growing if necessary.
 --
 -- Assumed complexity amortized \(O(1)\).
+{-# INLINE append #-}
 append :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> a -> m ()
 append v = stToPrim . basicAppend v
 
 -- | Ensure the capacity of the vector is at least the given size.
 --
 -- Assumed complexity \(O(n)\) when resizing is necessary.
+{-# INLINE reserve #-}
 reserve :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> m ()
 reserve v = stToPrim . basicReserve v
 
 -- | Discard excess capacity.
 --
 -- Assumed time \(O(n)\) when resizing is necessary.
+{-# INLINE conserve #-}
 conserve :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m ()
 conserve = stToPrim . basicConserve
 
+{-# INLINE shrink #-}
 shrink :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> m ()
 shrink v = stToPrim . basicShrink v
 
@@ -180,6 +189,7 @@ shrink v = stToPrim . basicShrink v
 -- The underlying vector should not be exfiltrated from this function,
 -- since this value is only safe to use until `append`, `reserve`, or
 -- `conserve` are called.
+{-# INLINE withMVector #-}
 withMVector :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> (MVector v (PrimState m) a -> m b) -> m b
 withMVector gv f = do
   len <- length gv
@@ -199,6 +209,7 @@ unsafeWithMVector = stToPrim . basicMVector
 -- | The current length of the vector.
 --
 -- Assumed complexity \(O(1)\).
+{-# INLINE length #-}
 length :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m Int
 length = stToPrim . basicLength
 
@@ -208,18 +219,23 @@ length = stToPrim . basicLength
 -- requiring a resize operation.
 --
 -- Assumed complexity \(O(1)\).
+{-# INLINE capacity #-}
 capacity :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> m Int
 capacity = stToPrim . basicCapacity
 
+{-# INLINE write #-}
 write :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> a -> m ()
 write v i = stToPrim . basicWrite v i
 
+{-# INLINE read #-}
 read :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> m a
 read v = stToPrim . basicRead v
 
+{-# INLINE readMaybe #-}
 readMaybe :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> m (Maybe a)
 readMaybe v = stToPrim . basicReadMaybe v
 
+{-# INLINE swap #-}
 swap :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> Int -> Int -> m ()
 swap gv i j = do
   xi <- read gv i
@@ -227,62 +243,80 @@ swap gv i j = do
   write gv i xj
   write gv j xi
 
+{-# INLINE mapM_ #-}
 mapM_ :: (PrimMonad m, GrowVector v a) => (a -> m b) -> v (PrimState m) a -> m ()
 mapM_ f gv = withMVector gv (MG.mapM_ f)
 
+{-# INLINE imapM_ #-}
 imapM_ :: (PrimMonad m, GrowVector v a) => (Int -> a -> m b) -> v (PrimState m) a -> m ()
 imapM_ f gv = withMVector gv (MG.imapM_ f)
 
+{-# INLINE forM_ #-}
 forM_ :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> (a -> m b) -> m ()
 forM_ = flip mapM_
 
+{-# INLINE iforM_ #-}
 iforM_ :: (PrimMonad m, GrowVector v a) => v (PrimState m) a -> (Int -> a -> m b) -> m ()
 iforM_ = flip imapM_
 
+{-# INLINE foldl #-}
 foldl :: (PrimMonad m, GrowVector v a) => (b -> a -> b) -> b -> v (PrimState m) a -> m b
 foldl f z gv = withMVector gv (MG.foldl f z)
 
 foldl' :: (PrimMonad m, GrowVector v a) => (b -> a -> b) -> b -> v (PrimState m) a -> m b
 foldl' f z gv = withMVector gv (MG.foldl' f z)
 
+{-# INLINE ifoldl #-}
 ifoldl :: (PrimMonad m, GrowVector v a) => (b -> Int -> a -> b) -> b -> v (PrimState m) a -> m b
 ifoldl f z gv = withMVector gv (MG.ifoldl f z)
 
+{-# INLINE ifoldl' #-}
 ifoldl' :: (PrimMonad m, GrowVector v a) => (b -> Int -> a -> b) -> b -> v (PrimState m) a -> m b
 ifoldl' f z gv = withMVector gv (MG.ifoldl' f z)
 
+{-# INLINE foldM #-}
 foldM :: (PrimMonad m, GrowVector v a) => (b -> a -> m b) -> b -> v (PrimState m) a -> m b
 foldM f z gv = withMVector gv (MG.foldM f z)
 
+{-# INLINE foldM' #-}
 foldM' :: (PrimMonad m, GrowVector v a) => (b -> a -> m b) -> b -> v (PrimState m) a -> m b
 foldM' f z gv = withMVector gv (MG.foldM' f z)
 
 ifoldM :: (PrimMonad m, GrowVector v a) => (b -> Int -> a -> m b) -> b -> v (PrimState m) a -> m b
 ifoldM f z gv = withMVector gv (MG.ifoldM f z)
 
+{-# INLINE ifoldM' #-}
 ifoldM' :: (PrimMonad m, GrowVector v a) => (b -> Int -> a -> m b) -> b -> v (PrimState m) a -> m b
 ifoldM' f z gv = withMVector gv (MG.ifoldM' f z)
 
+{-# INLINE foldr #-}
 foldr :: (PrimMonad m, GrowVector v a) => (a -> b -> b) -> b -> v (PrimState m) a -> m b
 foldr f z gv = withMVector gv (MG.foldr f z)
 
+{-# INLINE foldr' #-}
 foldr' :: (PrimMonad m, GrowVector v a) => (a -> b -> b) -> b -> v (PrimState m) a -> m b
 foldr' f z gv = withMVector gv (MG.foldr' f z)
 
+{-# INLINE ifoldr #-}
 ifoldr :: (PrimMonad m, GrowVector v a) => (Int -> a -> b -> b) -> b -> v (PrimState m) a -> m b
 ifoldr f z gv = withMVector gv (MG.ifoldr f z)
 
+{-# INLINE ifoldr' #-}
 ifoldr' :: (PrimMonad m, GrowVector v a) => (Int -> a -> b -> b) -> b -> v (PrimState m) a -> m b
 ifoldr' f z gv = withMVector gv (MG.ifoldr' f z)
 
+{-# INLINE foldrM #-}
 foldrM :: (PrimMonad m, GrowVector v a) => (a -> b -> m b) -> b -> v (PrimState m) a -> m b
 foldrM f z gv = withMVector gv (MG.foldrM f z)
 
+{-# INLINE foldrM' #-}
 foldrM' :: (PrimMonad m, GrowVector v a) => (a -> b -> m b) -> b -> v (PrimState m) a -> m b
 foldrM' f z gv = withMVector gv (MG.foldrM' f z)
 
+{-# INLINE ifoldrM #-}
 ifoldrM :: (PrimMonad m, GrowVector v a) => (Int -> a -> b -> m b) -> b -> v (PrimState m) a -> m b
 ifoldrM f z gv = withMVector gv (MG.ifoldrM f z)
 
+{-# INLINE ifoldrM' #-}
 ifoldrM' :: (PrimMonad m, GrowVector v a) => (Int -> a -> b -> m b) -> b -> v (PrimState m) a -> m b
 ifoldrM' f z gv = withMVector gv (MG.ifoldrM' f z)

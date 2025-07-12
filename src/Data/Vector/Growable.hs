@@ -105,14 +105,17 @@ instance GG.GrowVector GrowMVector a where
   basicCapacity = genericGrowVectorCapacity (.growVectorState)
 
 -- | Create an empty growable vector with the given initial capacity.
+{-# INLINE empty #-}
 empty :: (PrimMonad m) => Int -> m (GrowMVector (PrimState m) a)
 empty = GG.empty
 
 -- | Create an immutable copy of the grow vector.
+{-# INLINE freeze #-}
 freeze :: (PrimMonad m) => GrowMVector (PrimState m) a -> m (V.Vector a)
 freeze = stToPrim . flip withMVector V.freeze
 
 -- | Create a growable copy of the vector.
+{-# INLINE thaw #-}
 thaw :: (PrimMonad m) => V.Vector a -> m (GrowMVector (PrimState m) a)
 thaw = stToPrim . (V.thaw >=> fromMVector)
 
@@ -120,12 +123,14 @@ thaw = stToPrim . (V.thaw >=> fromMVector)
 --
 -- The mutable vector will be modified in-place; it should no longer
 -- be used independently.
+{-# INLINE fromMVector #-}
 fromMVector :: (PrimMonad m) => MV.MVector (PrimState m) a -> m (GrowMVector (PrimState m) a)
 fromMVector = GG.fromMVector
 
 -- | Create a new growable vector from an immutable vector.
 --
 -- This is an alias of 'thaw'.
+{-# INLINE fromVector #-}
 fromVector :: (PrimMonad m) => V.Vector a -> m (GrowMVector (PrimState m) a)
 fromVector = GG.fromVector
 
@@ -134,6 +139,7 @@ fromVector = GG.fromVector
 -- This takes \(O(1)\) amortized time. If there is sufficient
 -- capacity, this takes \(O(1)\) time; otherwise, this operation takes
 -- \(O(n)\) time.
+{-# INLINE append #-}
 append :: (PrimMonad m) => GrowMVector (PrimState m) a -> a -> m ()
 append = GG.append
 
@@ -141,6 +147,7 @@ append = GG.append
 --
 -- If new space must be reserved, this is an \(O(n)\) operation;
 -- otherwise, it is \(O(1)\).
+{-# INLINE reserve #-}
 reserve :: (PrimMonad m) => GrowMVector (PrimState m) a -> Int -> m ()
 reserve = GG.reserve
 
@@ -148,6 +155,7 @@ reserve = GG.reserve
 --
 -- If there is excess capacity, this is an \(O(n)\) operation;
 -- otherwise, it is \(O(1)\).
+{-# INLINE conserve #-}
 conserve :: (PrimMonad m) => GrowMVector (PrimState m) a -> m ()
 conserve = GG.conserve
 
@@ -155,12 +163,15 @@ conserve = GG.conserve
 --
 -- This is an \(O(n)\) operation, due to cleaning up discarded
 -- references.
+{-# INLINE shrink #-}
 shrink :: (PrimMonad m) => GrowMVector (PrimState m) a -> Int -> m ()
 shrink = GG.shrink
 
+{-# INLINE length #-}
 length :: (PrimMonad m) => GrowMVector (PrimState m) a -> m Int
 length = GG.length
 
+{-# INLINE withMVector #-}
 withMVector :: (PrimMonad m) => GrowMVector (PrimState m) a -> (MV.MVector (PrimState m) a -> m b) -> m b
 withMVector = GG.withMVector
 
@@ -176,78 +187,101 @@ unsafeWithMVector = GG.unsafeWithMVector
 --
 -- Up to this many elements may be stored in the vector without
 -- requiring a resize operation.
+{-# INLINE capacity #-}
 capacity :: (PrimMonad m) => GrowMVector (PrimState m) a -> m Int
 capacity = GG.capacity
 
+{-# INLINE read #-}
 read :: (PrimMonad m) => GrowMVector (PrimState m) a -> Int -> m a
 read = GG.read
 
+{-# INLINE readMaybe #-}
 readMaybe :: (PrimMonad m) => GrowMVector (PrimState m) a -> Int -> m (Maybe a)
 readMaybe = GG.readMaybe
 
+{-# INLINE write #-}
 write :: (PrimMonad m) => GrowMVector (PrimState m) a -> Int -> a -> m ()
 write = GG.write
 
+{-# INLINE swap #-}
 swap :: (PrimMonad m) => GrowMVector (PrimState m) a -> Int -> Int -> m ()
 swap = GG.swap
 
+{-# INLINE mapM_ #-}
 mapM_ :: (PrimMonad m) => (a -> m b) -> GrowMVector (PrimState m) a -> m ()
 mapM_ = GG.mapM_
 
+{-# INLINE imapM_ #-}
 imapM_ :: (PrimMonad m) => (Int -> a -> m b) -> GrowMVector (PrimState m) a -> m ()
 imapM_ = GG.imapM_
 
+{-# INLINE forM_ #-}
 forM_ :: (PrimMonad m) => GrowMVector (PrimState m) a -> (a -> m b) -> m ()
 forM_ = GG.forM_
 
+{-# INLINE iforM_ #-}
 iforM_ :: (PrimMonad m) => GrowMVector (PrimState m) a -> (Int -> a -> m b) -> m ()
 iforM_ = GG.iforM_
 
+{-# INLINE foldl #-}
 foldl :: (PrimMonad m) => (b -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
 foldl = GG.foldl
 
 foldl' :: (PrimMonad m) => (b -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
 foldl' = GG.foldl'
 
+{-# INLINE ifoldl #-}
 ifoldl :: (PrimMonad m) => (b -> Int -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
 ifoldl = GG.ifoldl
 
+{-# INLINE ifoldl' #-}
 ifoldl' :: (PrimMonad m) => (b -> Int -> a -> b) -> b -> GrowMVector (PrimState m) a -> m b
 ifoldl' = GG.ifoldl'
 
+{-# INLINE foldM #-}
 foldM :: (PrimMonad m) => (b -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
 foldM = GG.foldM
 
+{-# INLINE foldM' #-}
 foldM' :: (PrimMonad m) => (b -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
 foldM' = GG.foldM'
 
 ifoldM :: (PrimMonad m) => (b -> Int -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
 ifoldM = GG.ifoldM
 
+{-# INLINE ifoldM' #-}
 ifoldM' :: (PrimMonad m) => (b -> Int -> a -> m b) -> b -> GrowMVector (PrimState m) a -> m b
 ifoldM' = GG.ifoldM'
 
+{-# INLINE foldr #-}
 foldr :: (PrimMonad m) => (a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
 foldr = GG.foldr
 
+{-# INLINE foldr' #-}
 foldr' :: (PrimMonad m) => (a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
 foldr' = GG.foldr'
 
+{-# INLINE ifoldr #-}
 ifoldr :: (PrimMonad m) => (Int -> a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
 ifoldr = GG.ifoldr
 
+{-# INLINE ifoldr' #-}
 ifoldr' :: (PrimMonad m) => (Int -> a -> b -> b) -> b -> GrowMVector (PrimState m) a -> m b
 ifoldr' = GG.ifoldr'
 
+{-# INLINE foldrM #-}
 foldrM :: (PrimMonad m) => (a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
 foldrM = GG.foldrM
 
+{-# INLINE foldrM' #-}
 foldrM' :: (PrimMonad m) => (a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
 foldrM' = GG.foldrM'
 
+{-# INLINE ifoldrM #-}
 ifoldrM :: (PrimMonad m) => (Int -> a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
 ifoldrM = GG.ifoldrM
 
+{-# INLINE ifoldrM' #-}
 ifoldrM' :: (PrimMonad m) => (Int -> a -> b -> m b) -> b -> GrowMVector (PrimState m) a -> m b
 ifoldrM' = GG.ifoldrM'
 
@@ -255,16 +289,19 @@ type GenericConstructor gv s a = STRef s (GrowVectorState (GG.MVector gv) s a) -
 
 type GenericRef gv s a = gv s a -> STRef s (GrowVectorState (GG.MVector gv) s a)
 
+{-# INLINE genericGrowVectorEmpty #-}
 genericGrowVectorEmpty :: (GG.GrowVector gv a) => (STRef s (GrowVectorState (GG.MVector gv) s a) -> gv s a) -> Int -> ST s (gv s a)
 genericGrowVectorEmpty f initCapacity = do
   mv <- MG.unsafeNew initCapacity
   ref <- newSTRef (GrowVectorState mv 0 initCapacity)
   pure (f ref)
 
+{-# INLINE genericGrowVectorFromMVector #-}
 genericGrowVectorFromMVector :: (GG.GrowVector gv a) => GenericConstructor gv s a -> (GG.MVector gv) s a -> ST s (gv s a)
 genericGrowVectorFromMVector f mv =
   fmap f (newSTRef (GrowVectorState mv (MG.length mv) (MG.length mv)))
 
+{-# INLINE genericGrowVectorAppend #-}
 genericGrowVectorAppend :: (GG.GrowVector gv a) => GenericRef gv s a -> gv s a -> a -> ST s ()
 genericGrowVectorAppend getRef gv x =
   let ref = getRef gv
@@ -277,6 +314,7 @@ genericGrowVectorAppend getRef gv x =
             size' = size + 1
         writeSTRef ref (GrowVectorState v size' capacity'')
 
+{-# INLINE genericGrowVectorReserve #-}
 genericGrowVectorReserve :: (GG.GrowVector gv a) => GenericRef gv s a -> gv s a -> Int -> ST s ()
 genericGrowVectorReserve getRef gv newCapacity =
   let ref = getRef gv
@@ -286,6 +324,7 @@ genericGrowVectorReserve getRef gv newCapacity =
           v' <- MG.grow v (newCapacity - capacity')
           writeSTRef ref (GrowVectorState v' size newCapacity)
 
+{-# INLINE genericGrowVectorConserve #-}
 genericGrowVectorConserve :: (GG.GrowVector gv a) => GenericRef gv s a -> gv s a -> ST s ()
 genericGrowVectorConserve getRef gv =
   let ref = getRef gv
@@ -296,6 +335,7 @@ genericGrowVectorConserve getRef gv =
           Control.Monad.forM_ [0 .. size - 1] $ \i -> MG.read v i >>= MG.write v' i
           writeSTRef ref (GrowVectorState v' size size)
 
+{-# INLINE genericGrowVectorShrink #-}
 genericGrowVectorShrink :: (GG.GrowVector gv a) => GenericRef gv s a -> gv s a -> Int -> ST s ()
 genericGrowVectorShrink getRef gv maxSize =
   let ref = getRef gv
@@ -305,6 +345,7 @@ genericGrowVectorShrink getRef gv maxSize =
           MG.clear (MG.slice maxSize (capacity' - maxSize) v)
           writeSTRef ref (GrowVectorState v maxSize capacity')
 
+{-# INLINE genericGrowVectorMVector #-}
 genericGrowVectorMVector :: (GG.GrowVector gv a) => GenericRef gv s a -> gv s a -> ST s ((GG.MVector gv) s a)
 genericGrowVectorMVector getRef gv =
   let ref = getRef gv
@@ -312,6 +353,7 @@ genericGrowVectorMVector getRef gv =
         (GrowVectorState v size _) <- readSTRef ref
         pure (MG.slice 0 size v)
 
+{-# INLINE genericGrowVectorCapacity #-}
 genericGrowVectorCapacity :: GenericRef gv s a -> gv s a -> ST s Int
 genericGrowVectorCapacity getRef gv =
   let ref = getRef gv
@@ -319,6 +361,7 @@ genericGrowVectorCapacity getRef gv =
         (GrowVectorState _ _ capacity') <- readSTRef ref
         pure capacity'
 
+{-# INLINE genericGrowVectorLength #-}
 genericGrowVectorLength :: GenericRef gv s a -> gv s a -> ST s Int
 genericGrowVectorLength getRef gv =
   let ref = getRef gv

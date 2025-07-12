@@ -85,6 +85,7 @@ instance (MG.MVector mv a) => HG.IntrusiveFixedHeap (Heap mv) a where
   basicHeapPopPush' h x = fmap (fmap (HG.genericHandleToCallback h)) <$> HG.genericHeapPopPush' h x
   basicHeapPushPop' h x = first (HG.genericHandleToCallback h) <$> HG.genericHeapPushPop' h x
 
+{-# INLINE heap #-}
 heap :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => (a -> a -> Ordering) -> mv s a -> m (Heap mv s a)
 heap cmp mv = stToPrim $ do
   refs <- MG.generateM (MG.length mv) (newSTRef . Just)
@@ -92,35 +93,46 @@ heap cmp mv = stToPrim $ do
   build h
   pure h
 
+{-# INLINE fromHeap #-}
 fromHeap :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> m (mv s a)
 fromHeap (Heap (_, mv, _)) = pure mv
 
+{-# INLINE build #-}
 build :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> m ()
 build = HG.build
 
+{-# INLINE heapify #-}
 heapify :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> Int -> m ()
 heapify = HG.heapify
 
+{-# INLINE peek #-}
 peek :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> m (Maybe a)
 peek = HG.peek
 
+{-# INLINE popPush #-}
 popPush :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> a -> m (Maybe a)
 popPush = HG.popPush
 
+{-# INLINE pushPop #-}
 pushPop :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> a -> m a
 pushPop = HG.pushPop
 
+{-# INLINE reprioritize #-}
 reprioritize :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> Int -> a -> m ()
 reprioritize = HG.reprioritize
 
+{-# INLINE peek' #-}
 peek' :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> m (Maybe (a, HG.Reprioritize m a))
 peek' = HG.peek'
 
+{-# INLINE popPush' #-}
 popPush' :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> a -> m (Maybe (a, HG.Reprioritize m a))
 popPush' = HG.popPush'
 
+{-# INLINE pushPop' #-}
 pushPop' :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> a -> m (HG.Reprioritize m a, a)
 pushPop' = HG.pushPop'
 
+{-# INLINE size #-}
 size :: (PrimMonad m, MG.MVector mv a, s ~ PrimState m) => Heap mv s a -> m Int
 size = HG.size
