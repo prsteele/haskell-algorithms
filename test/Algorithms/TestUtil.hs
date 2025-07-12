@@ -26,3 +26,9 @@ newtype D = D {unD :: Integer}
 
 failure :: (Monad m) => String -> PropertyM m ()
 failure = assertWith False
+
+(==?) :: (Monad m, Show a, Eq a) => a -> a -> PropertyM m ()
+x ==? y =
+  if x == y
+    then assertWith True (show x <> " == " <> show y)
+    else assertWith False (show x <> " /= " <> show y)

@@ -26,12 +26,6 @@ manhattanGridNeighbors width (x, y) = filter inBounds [(x + 1, y), (x - 1, y), (
   where
     inBounds = uncurry (&&) . dup bimap (between 0 width)
 
-(==?) :: (Monad m, Show a, Eq a) => a -> a -> PropertyM m ()
-x ==? y =
-  if x == y
-    then assertWith True (show x <> " == " <> show y)
-    else assertWith False (show x <> " /= " <> show y)
-
 dijkstrasManhattan :: Positive Int -> (Int, Int) -> (Int, Int) -> Property
 dijkstrasManhattan (Positive width) source' sink' =
   let mkValid = bimap f f
