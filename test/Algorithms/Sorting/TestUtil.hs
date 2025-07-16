@@ -94,6 +94,6 @@ isSortedCopyOf sorted unsorted = do
         )
 
 isSorted :: (Show a, G.Vector v a, Ord a) => v a -> Expectation
-isSorted xs = forM_ (zip (G.toList xs) (tail (G.toList xs))) $ \(x, y) -> do
+isSorted xs = forM_ (zip (G.toList xs) (drop 1 (G.toList xs))) $ \(x, y) -> do
   when (x > y) $ do
     assertFailure (show x <> " > " <> show y <> " in " <> show (G.toList xs))

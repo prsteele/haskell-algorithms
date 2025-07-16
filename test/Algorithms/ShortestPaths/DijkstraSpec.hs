@@ -56,7 +56,7 @@ dijkstrasManhattan (Positive width) source' sink' =
               _ -> failure "empty path"
 
             -- Are all path elements adjacent?
-            forM_ (zip path (tail path)) $ \(u, v) ->
+            forM_ (zip path (drop 1 path)) $ \(u, v) ->
               assertWith (adjacent u v) (show u <> " not adjacent to " <> show v)
 
 quadraticLineCost :: Int -> Int -> Int
