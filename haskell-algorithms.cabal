@@ -43,7 +43,7 @@ library
   import:             warnings
                     , extensions
   hs-source-dirs:     src
-  default-language:   Haskell2010
+  default-language:   GHC2021
   exposed-modules:    Algorithms.MaximumSubArray
                     , Algorithms.Permutations
                     , Algorithms.Shuffle
@@ -89,7 +89,7 @@ custom-setup
 test-suite doctests
   import:             warnings
                     , extensions
-  default-language:   Haskell2010
+  default-language:   GHC2021
   type:               exitcode-stdio-1.0
   hs-source-dirs:     test
   main-is:            Doctest.hs
@@ -104,7 +104,7 @@ test-suite tests
   import:             warnings
                     , extensions
   hs-source-dirs:     test
-  default-language:   Haskell2010
+  default-language:   GHC2021
   ghc-options:        -threaded -with-rtsopts=-N
   type:               exitcode-stdio-1.0
   main-is:            Spec.hs
@@ -142,7 +142,7 @@ benchmark bench
   import:             warnings
                     , extensions
   hs-source-dirs:     bench
-  default-language:   Haskell2010
+  default-language:   GHC2021
   ghc-options:        -threaded -with-rtsopts=-N -with-rtsopts=-T -Wall
   type:               exitcode-stdio-1.0
   main-is:            Bench.hs
