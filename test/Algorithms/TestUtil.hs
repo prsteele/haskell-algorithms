@@ -2,10 +2,12 @@
 
 module Algorithms.TestUtil where
 
-import qualified Data.Vector as V
+import Data.Vector qualified as V
+import Test.Hspec
 import Test.QuickCheck
 import Test.QuickCheck.Monadic
 import Test.QuickCheck.Poly
+import Text.Printf
 
 newtype IntVector = IntVector (V.Vector Int)
   deriving (Show)
@@ -32,3 +34,18 @@ x ==? y =
   if x == y
     then assertWith True (show x <> " == " <> show y)
     else assertWith False (show x <> " /= " <> show y)
+
+expect :: String -> Bool -> Expectation
+expect msg x
+  | x = pure ()
+  | otherwise = expectationFailure msg
+
+expect1 :: (PrintfArg a) => String -> (a -> Bool) -> a -> Expectation
+expect1 msg f x
+  | f x = pure ()
+  | otherwise = expectationFailure (printf msg x)
+
+expect2 :: (PrintfArg a, PrintfArg b) => String -> (a -> b -> Bool) -> a -> b -> Expectation
+expect2 msg f x y
+  | f x y = pure ()
+  | otherwise = expectationFailure (printf msg x y)

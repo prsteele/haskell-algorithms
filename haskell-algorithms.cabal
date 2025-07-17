@@ -44,7 +44,8 @@ library
                     , extensions
   hs-source-dirs:     src
   default-language:   GHC2021
-  exposed-modules:    Algorithms.MaximumSubArray
+  exposed-modules:    Algorithms.BinarySearch
+                    , Algorithms.MaximumSubArray
                     , Algorithms.Permutations
                     , Algorithms.Shuffle
                     , Algorithms.ShortestPaths.Dijkstra
@@ -108,8 +109,9 @@ test-suite tests
   ghc-options:        -threaded -with-rtsopts=-N
   type:               exitcode-stdio-1.0
   main-is:            Spec.hs
-  other-modules:      Algorithms.PermutationsSpec
+  other-modules:      Algorithms.BinarySearchSpec
                     , Algorithms.MaximumSubArraySpec
+                    , Algorithms.PermutationsSpec
                     , Algorithms.ShortestPaths.DijkstraSpec
                     , Algorithms.ShuffleSpec
                     , Algorithms.Sorting.CountingSortSpec
