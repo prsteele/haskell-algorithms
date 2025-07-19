@@ -1,14 +1,17 @@
 module Algorithms.BinarySearchSpec where
 
 import Algorithms.BinarySearch
+import Algorithms.BinarySearch.Mutable qualified as BSM
 import Algorithms.Sorting (quicksort)
 import Algorithms.TestUtil
 import Control.Monad
+import Control.Monad.Primitive
 import Data.Function
 import Data.Maybe
 import Data.Ord
 import Data.Vector qualified as V
 import Data.Vector.Generic qualified as G
+import Data.Vector.Mutable qualified as MV
 import Test.Hspec
 import Test.Hspec.QuickCheck
 import Test.QuickCheck
@@ -25,7 +28,7 @@ type BisectionBy v a = (a -> a -> Ordering) -> v a -> a -> Int
 type Find v a = v a -> a -> Maybe Int
 
 spec :: Spec
-spec =
+spec = do
   describe "Binary search" $ do
     describe "bisectLeft" $ do
       prop "finds a valid insertion index" $
@@ -76,6 +79,32 @@ spec =
         \(SortedVec v) x -> checkNEDuplicates v x
       prop "are off by one when looking for unique element" $
         \(SortedVec v) x -> checkAdjacentUnique v x
+
+  describe "Mutable binary search" $ do
+    describe "bisectLeft" $ do
+      prop "agrees with immutable bisectLeft" $
+        \(SortedVec v) x -> _mutableEquivalent v (`bisectLeft` x) (`BSM.bisectLeft` (x :: Integer))
+    describe "bisectLeftBy" $ do
+      prop "agrees with immutable bisectLeftBy" $
+        \(SortedVec v) x -> _mutableEquivalent v (\z -> bisectLeftBy compare z x) (\z -> BSM.bisectLeftBy compare z (x :: Integer))
+    describe "findLeftConsistent" $ do
+      prop "agrees with immutable findLeft" $
+        \(SortedVec v) x -> _mutableEquivalent v (`findLeft` x) (`BSM.findLeft` (x :: Integer))
+    describe "findLeftBy" $ do
+      prop "agrees with immutable findLeftBy" $
+        \(SortedVec v) x -> _mutableEquivalent v (\z -> findLeftBy compare z x) (\z -> BSM.findLeftBy compare z (x :: Integer))
+    describe "bisectRight" $ do
+      prop "agrees with immutable bisectRight" $
+        \(SortedVec v) x -> _mutableEquivalent v (`bisectRight` x) (`BSM.bisectRight` (x :: Integer))
+    describe "bisectRightBy" $ do
+      prop "agrees with immutable bisectRightBy" $
+        \(SortedVec v) x -> _mutableEquivalent v (\z -> bisectRightBy compare z x) (\z -> BSM.bisectRightBy compare z (x :: Integer))
+    describe "findRightConsistent" $ do
+      prop "agrees with immutable findRight" $
+        \(SortedVec v) x -> _mutableEquivalent v (`findRight` x) (`BSM.findRight` (x :: Integer))
+    describe "findRightBy" $ do
+      prop "agrees with immutable findRightBy" $
+        \(SortedVec v) x -> _mutableEquivalent v (\z -> findRightBy compare z x) (\z -> BSM.findRightBy compare z (x :: Integer))
 
 bisectionValid :: (G.Vector v a, Ord a, PrintfArg a) => BisectionBy v a -> (a -> a -> Ordering) -> v a -> a -> Expectation
 bisectionValid f cmp v x =
@@ -204,3 +233,8 @@ checkNEDuplicates v' x =
         expect2 "bisectLeft should differ from bisectRight: %i == %i" (/=) l r
         expect "findLeft finds the index of bisectLeft" (Just l == findLeft v x)
         expect "findRight finds the (adjusted) index of bisectRight" (Just (r - 1) == findRight v x)
+
+_mutableEquivalent :: (Show b, Eq b) => V.Vector a -> (V.Vector a -> b) -> (MV.MVector RealWorld a -> IO b) -> Expectation
+_mutableEquivalent v f g = do
+  mv <- V.thaw v
+  g mv `shouldReturn` f v

@@ -45,6 +45,7 @@ library
   hs-source-dirs:     src
   default-language:   GHC2021
   exposed-modules:    Algorithms.BinarySearch
+                    , Algorithms.BinarySearch.Mutable
                     , Algorithms.MaximumSubArray
                     , Algorithms.Permutations
                     , Algorithms.Shuffle
