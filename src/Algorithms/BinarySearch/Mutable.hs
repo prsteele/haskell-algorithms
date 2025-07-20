@@ -6,6 +6,7 @@ import Data.Vector.Generic.Mutable qualified as MG
 -- | The leftmost index where the value can be inserted to maintain a sorted list.
 --
 -- This is identical to 'Algorithms.BinarySearch.bisectLeft' but for mutable vectors.
+{-# INLINEABLE bisectLeft #-}
 bisectLeft ::
   (PrimMonad m, s ~ PrimState m, MG.MVector mv a, Ord a) =>
   -- | The sorted vector. We do not verify that @mv@ is sorted.
@@ -19,6 +20,7 @@ bisectLeft = bisectLeftBy compare
 -- | The leftmost index where the value can be inserted to maintain a sorted list.
 --
 -- This is identical to 'Algorithms.BinarySearch.bisectLeftBy' but for mutable vectors.
+{-# INLINEABLE bisectLeftBy #-}
 bisectLeftBy ::
   (PrimMonad m, s ~ PrimState m, MG.MVector mv a) =>
   -- | The ordering function
@@ -44,6 +46,7 @@ bisectLeftBy cmp mv x = go 0 (MG.length mv)
 -- | The rightmost index where the value can be inserted to maintain a sorted list.
 --
 -- This is identical to 'Algorithms.BinarySearch.bisectRight' but for mutable vectors.
+{-# INLINEABLE bisectRight #-}
 bisectRight ::
   (PrimMonad m, s ~ PrimState m, MG.MVector mv a, Ord a) =>
   -- | The sorted vector. We do not verify that @v@ is sorted.
@@ -57,6 +60,7 @@ bisectRight = bisectRightBy compare
 -- | The rightmost index where the value can be inserted to maintain a sorted list.
 --
 -- This is identical to 'Algorithms.BinarySearch.bisectRightBy' but for mutable vectors.
+{-# INLINEABLE bisectRightBy #-}
 bisectRightBy ::
   (PrimMonad m, s ~ PrimState m, MG.MVector mv a) =>
   -- | The ordering function
@@ -80,10 +84,12 @@ bisectRightBy cmp mv x = go 0 (MG.length mv)
                   _ -> go (m + 1) u
 
 -- | The leftmost index of an element in a sorted list, if it exists.
+{-# INLINEABLE findLeft #-}
 findLeft :: (PrimMonad m, s ~ PrimState m, MG.MVector mv a, Ord a) => mv s a -> a -> m (Maybe Int)
 findLeft = findLeftBy compare
 
 -- | The leftmost index of an element in a sorted list, if it exists.
+{-# INLINEABLE findLeftBy #-}
 findLeftBy :: (PrimMonad m, s ~ PrimState m, MG.MVector mv a) => (a -> a -> Ordering) -> mv s a -> a -> m (Maybe Int)
 findLeftBy cmp mv x = do
   ix <- bisectLeftBy cmp mv x
@@ -96,10 +102,12 @@ findLeftBy cmp mv x = do
         else Nothing
 
 -- | The rightmost index of an element in a sorted list, if it exists.
+{-# INLINEABLE findRight #-}
 findRight :: (PrimMonad m, s ~ PrimState m, MG.MVector mv a, Ord a) => mv s a -> a -> m (Maybe Int)
 findRight = findRightBy compare
 
 -- | The rightmost index of an element in a sorted list, if it exists.
+{-# INLINEABLE findRightBy #-}
 findRightBy :: (PrimMonad m, s ~ PrimState m, MG.MVector mv a) => (a -> a -> Ordering) -> mv s a -> a -> m (Maybe Int)
 findRightBy cmp mv x = do
   ix' <- bisectRightBy cmp mv x

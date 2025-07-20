@@ -15,6 +15,7 @@ import Data.Vector.Generic qualified as G
 -- @
 -- all ((== GE) . (`cmp` x)) (G.slice v i (G.length v - 1 - i)) == True
 -- @
+{-# INLINEABLE bisectLeft #-}
 bisectLeft ::
   (G.Vector v a, Ord a) =>
   -- | The sorted vector. We do not verify that @v@ is sorted.
@@ -38,6 +39,7 @@ bisectLeft = bisectLeftBy compare
 -- @
 -- all ((== GE) . (`cmp` x)) (G.slice v i (G.length v - 1 - i)) == True
 -- @
+{-# INLINEABLE bisectLeftBy #-}
 bisectLeftBy ::
   (G.Vector v a) =>
   -- | The ordering function
@@ -71,6 +73,7 @@ bisectLeftBy cmp v x = go 0 (G.length v)
 -- @
 -- all ((== GT) . (`cmp` x)) (G.slice v (i + 1) (G.length v - i)) == True
 -- @
+{-# INLINEABLE bisectRight #-}
 bisectRight ::
   (G.Vector v a, Ord a) =>
   -- | The sorted vector. We do not verify that @v@ is sorted.
@@ -94,6 +97,7 @@ bisectRight = bisectRightBy compare
 -- @
 -- all ((== GT) . (`cmp` x)) (G.slice v (i + 1) (G.length v - i)) == True
 -- @
+{-# INLINEABLE bisectRightBy #-}
 bisectRightBy ::
   (G.Vector v a) =>
   -- | The ordering function
@@ -115,10 +119,12 @@ bisectRightBy cmp v x = go 0 (G.length v)
                 _ -> go (m + 1) u
 
 -- | The leftmost index of an element in a sorted list, if it exists.
+{-# INLINEABLE findLeft #-}
 findLeft :: (G.Vector v a, Ord a) => v a -> a -> Maybe Int
 findLeft = findLeftBy compare
 
 -- | The leftmost index of an element in a sorted list, if it exists.
+{-# INLINEABLE findLeftBy #-}
 findLeftBy :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> a -> Maybe Int
 findLeftBy cmp v x =
   let ix = bisectLeftBy cmp v x
@@ -130,10 +136,12 @@ findLeftBy cmp v x =
             else Nothing
 
 -- | The rightmost index of an element in a sorted list, if it exists.
+{-# INLINEABLE findRight #-}
 findRight :: (G.Vector v a, Ord a) => v a -> a -> Maybe Int
 findRight = findRightBy compare
 
 -- | The rightmost index of an element in a sorted list, if it exists.
+{-# INLINEABLE findRightBy #-}
 findRightBy :: (G.Vector v a) => (a -> a -> Ordering) -> v a -> a -> Maybe Int
 findRightBy cmp v x =
   let ix = bisectRightBy cmp v x - 1
