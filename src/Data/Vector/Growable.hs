@@ -74,11 +74,11 @@ import Control.Monad
 import Control.Monad.Primitive
 import Control.Monad.ST
 import Data.STRef
-import qualified Data.Vector as V
-import qualified Data.Vector.Generic.Mutable as MG
-import qualified Data.Vector.Growable.Generic as GG
-import qualified Data.Vector.Mutable as MV
-import Prelude hiding (length, mapM_, read)
+import Data.Vector qualified as V
+import Data.Vector.Generic.Mutable qualified as MG
+import Data.Vector.Growable.Generic qualified as GG
+import Data.Vector.Mutable qualified as MV
+import Prelude hiding (foldl', length, mapM_, read)
 
 -- | An 'MVector' that can grow (and shrink).
 newtype GrowMVector s a = GrowMVector

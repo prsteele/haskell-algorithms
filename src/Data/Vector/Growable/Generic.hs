@@ -63,9 +63,9 @@ import Control.Monad hiding (foldM, forM_, mapM_)
 import Control.Monad.Primitive
 import Control.Monad.ST
 import Data.Kind
-import qualified Data.Vector.Generic as G
-import qualified Data.Vector.Generic.Mutable as MG
-import Prelude hiding (foldl, foldr, length, mapM_, read)
+import Data.Vector.Generic qualified as G
+import Data.Vector.Generic.Mutable qualified as MG
+import Prelude hiding (foldl, foldl', foldr, length, mapM_, read)
 
 -- | A vector that can grow (and shrink).
 --

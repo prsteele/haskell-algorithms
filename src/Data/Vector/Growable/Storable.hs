@@ -60,12 +60,12 @@ where
 import Control.Monad
 import Control.Monad.Primitive
 import Data.STRef
-import qualified Data.Vector.Growable as GV
-import qualified Data.Vector.Growable.Generic as GG
-import qualified Data.Vector.Storable as VS
-import qualified Data.Vector.Storable.Mutable as MS
+import Data.Vector.Growable qualified as GV
+import Data.Vector.Growable.Generic qualified as GG
+import Data.Vector.Storable qualified as VS
+import Data.Vector.Storable.Mutable qualified as MS
 import Foreign.Storable
-import Prelude hiding (length, read)
+import Prelude hiding (foldl', length, read)
 
 -- | An 'MS.MVector' that can grow (and shrink).
 newtype GrowMVector s a = GrowMVector
